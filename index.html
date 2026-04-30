@@ -3,7 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>J. Buck | Portfolio</title>
+    <meta name="description" content="Portfolio of Jed Buckert — MS Finance candidate, data analyst, and builder of financial tools and dashboards.">
+    <title>Jed Buckert | Portfolio</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%235db8f5'/><text x='50%25' y='56%25' dominant-baseline='middle' text-anchor='middle' font-family='Inter,sans-serif' font-weight='800' font-size='14' fill='%230f1116'>JB</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -11,7 +13,7 @@
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href="index.html" aria-label="Portfolio home">J. Buck</a>
+      <a class="brand" href="index.html" aria-label="Portfolio home">Jed Buckert</a>
       <nav class="nav" aria-label="Primary navigation">
         <a href="index.html" aria-current="page">Projects</a>
         <a href="resume.html">CV / Resume</a>
@@ -21,27 +23,44 @@
 
     <main>
       <section class="hero">
-        <div class="hero-copy">
+        <div class="hero-copy animate-in">
           <p class="eyebrow">Portfolio</p>
           <h1>Building practical digital products, data tools, and decision-ready interfaces.</h1>
-          <p class="lede">A clean personal site for selected work, professional background, and a market dashboard designed for quick economic context.</p>
+          <p class="lede">MS Finance candidate and junior data analyst at Weavix. I build tools that make financial data clearer and decisions faster.</p>
           <div class="hero-actions">
             <a class="button primary" href="#projects">View projects</a>
             <a class="button secondary" href="dashboard.html">Open dashboard</a>
           </div>
         </div>
-        <div class="hero-panel" aria-label="Portfolio snapshot">
+        <div class="hero-panel animate-in" aria-label="Portfolio snapshot" style="animation-delay:0.1s">
           <div>
             <span class="metric-label">Focus</span>
-            <strong>Product, analytics, automation</strong>
+            <strong>Finance, data analytics, automation</strong>
           </div>
           <div>
             <span class="metric-label">Stack</span>
-            <strong>Web, data, cloud workflows</strong>
+            <strong>Excel, Python, web &amp; cloud workflows</strong>
           </div>
           <div>
-            <span class="metric-label">Output</span>
-            <strong>Reliable tools that ship</strong>
+            <span class="metric-label">Currently</span>
+            <strong>MS Finance, Walton College · May 2026</strong>
+          </div>
+        </div>
+      </section>
+
+      <section id="about" class="section about-section">
+        <div class="about-grid">
+          <div class="about-photo" aria-label="Jed Buckert headshot placeholder">JB</div>
+          <div class="about-copy">
+            <p class="eyebrow">About</p>
+            <h2>Jed Buckert</h2>
+            <p class="lede">Master of Science in Finance candidate at the Sam M. Walton College of Business, University of Arkansas, graduating May 2026. I work full-time as a Junior Data Analyst at Weavix, where I reconcile billing data, build reporting workflows, and train incoming analysts. Outside of work I build financial dashboards, automation tools, and clean data interfaces.</p>
+            <ul class="about-facts">
+              <li><strong>Education:</strong> BS Business Administration (GPA 3.84) + MS Finance, University of Arkansas</li>
+              <li><strong>Experience:</strong> Junior Data Analyst at Weavix · Resource Manager at Buckert Contracting</li>
+              <li><strong>Certified:</strong> Bloomberg Market Concepts (BMC)</li>
+              <li><strong>Interests:</strong> Investment analysis, entrepreneurship, real estate, technology</li>
+            </ul>
           </div>
         </div>
       </section>
@@ -52,43 +71,75 @@
           <h2>Selected work</h2>
         </div>
         <div class="project-grid">
-          <article class="project-card">
+          <article class="project-card animate-in">
             <div class="project-media data"></div>
             <div class="project-body">
               <h3>Financial Signal Dashboard</h3>
-              <p>Market and macroeconomic indicators arranged for fast review across prices, inflation, housing, and exchange rates.</p>
+              <p>Live market and macroeconomic indicators — broad equity indices, sector ETFs, inflation, housing, mortgage rates, and AI-sector funding data — arranged for fast review.</p>
               <div class="tags">
-                <span>Data UX</span><span>APIs</span><span>Markets</span>
+                <span>Data UX</span><span>FRED API</span><span>Markets</span><span>JavaScript</span>
               </div>
+              <a class="project-link" href="dashboard.html">Open dashboard →</a>
             </div>
           </article>
-          <article class="project-card">
+          <article class="project-card animate-in">
             <div class="project-media ops"></div>
             <div class="project-body">
-              <h3>Workflow Automation Toolkit</h3>
-              <p>Repeatable scripts and lightweight interfaces that reduce manual reporting, reconciliation, and handoff work.</p>
+              <h3>Billing Reconciliation System</h3>
+              <p>Automated billing reconciliation workflow for ~200 client accounts at Weavix. Reduced manual review time and improved accuracy of weekly SIM card usage reports.</p>
               <div class="tags">
-                <span>Automation</span><span>Operations</span><span>Reporting</span>
+                <span>Excel</span><span>Automation</span><span>Operations</span><span>Reporting</span>
               </div>
             </div>
           </article>
-          <article class="project-card">
+          <article class="project-card animate-in">
             <div class="project-media product"></div>
             <div class="project-body">
-              <h3>Client Portal Concept</h3>
-              <p>A focused portal experience for organizing status, documents, metrics, and next actions in one place.</p>
+              <h3>Shollmier Investment Trust — Sector Analysis</h3>
+              <p>Conducted Communication Services sector analysis and prepared investment reports on Alphabet (GOOGL) and AT&amp;T (T) as a student analyst for the UA portfolio management program.</p>
               <div class="tags">
-                <span>Product</span><span>Frontend</span><span>Systems</span>
+                <span>Equity Research</span><span>Bloomberg</span><span>Financial Modeling</span>
               </div>
             </div>
           </article>
         </div>
       </section>
+
+      <section id="contact" class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Contact</p>
+          <h2>Get in touch</h2>
+        </div>
+        <div class="contact-grid">
+          <a class="contact-item" href="mailto:jedbuckert@gmail.com">
+            <span class="contact-icon">✉</span>
+            <span>jedbuckert@gmail.com</span>
+          </a>
+          <a class="contact-item" href="tel:+13162078835">
+            <span class="contact-icon">☎</span>
+            <span>(316) 207-8835</span>
+          </a>
+          <span class="contact-item">
+            <span class="contact-icon">⌖</span>
+            <span>Fayetteville, AR</span>
+          </span>
+          <a class="contact-item" href="resume.html">
+            <span class="contact-icon">📄</span>
+            <span>View CV / Resume</span>
+          </a>
+        </div>
+      </section>
     </main>
 
     <footer class="site-footer">
-      <span>J. Buck</span>
-      <span>Portfolio, CV, and financial dashboard</span>
+      <span>© 2026 Jed Buckert</span>
+      <span>
+        <a href="mailto:jedbuckert@gmail.com">jedbuckert@gmail.com</a>
+        &nbsp;·&nbsp;
+        <a href="resume.html">CV / Resume</a>
+        &nbsp;·&nbsp;
+        <a href="dashboard.html">Financial Dashboard</a>
+      </span>
     </footer>
   </body>
 </html>

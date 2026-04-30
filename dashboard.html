@@ -3,7 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>J. Buck | Financial Dashboard</title>
+    <meta name="description" content="Live financial dashboard tracking broad market indices, sector ETFs, inflation, housing, and AI-sector funding data.">
+    <title>Jed Buckert | Financial Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%235db8f5'/><text x='50%25' y='56%25' dominant-baseline='middle' text-anchor='middle' font-family='Inter,sans-serif' font-weight='800' font-size='14' fill='%230f1116'>JB</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -11,7 +13,7 @@
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href="index.html">J. Buck</a>
+      <a class="brand" href="index.html">Jed Buckert</a>
       <nav class="nav" aria-label="Primary navigation">
         <a href="index.html">Projects</a>
         <a href="resume.html">CV / Resume</a>
@@ -19,94 +21,597 @@
       </nav>
     </header>
 
+    <!-- Stale data warning banner -->
+    <div id="stale-warning" class="stale-warning" hidden>
+      <span>⚠ Snapshot data is more than 3 days old. Some values may be outdated. Live refresh attempted.</span>
+      <button class="stale-dismiss" id="dismiss-warning" type="button" aria-label="Dismiss warning">✕</button>
+    </div>
+
     <main class="page-shell">
+      <!-- Dashboard header -->
       <section class="dashboard-header">
         <div>
           <p class="eyebrow">Financial Dashboard</p>
-          <h1>Market and economic indicators</h1>
-          <p class="lede">A compact view for stocks, inflation, CPI, housing, and exchange rates.</p>
+          <h1>Market &amp; economic indicators</h1>
+          <p class="lede">Broad market indices, sector ETFs, macro data, housing, and AI-sector signals. Data from FRED, Stooq, and manually curated public sources.</p>
         </div>
-        <button class="button primary" id="refresh-data" type="button">Refresh data</button>
+        <div class="dash-controls">
+          <span id="updated-at" class="dash-timestamp">Not yet loaded</span>
+          <button class="button primary" id="refresh-data" type="button">↻ Refresh data</button>
+        </div>
       </section>
 
-      <section class="indicator-grid" aria-live="polite">
-        <article class="indicator-card">
-          <span class="metric-label">S&P 500</span>
-          <strong id="sp500">Loading</strong>
-          <p id="sp500-note">Stock index proxy</p>
-        </article>
-        <article class="indicator-card">
-          <span class="metric-label">NASDAQ</span>
-          <strong id="nasdaq">Loading</strong>
-          <p id="nasdaq-note">Technology index proxy</p>
-        </article>
-        <article class="indicator-card">
-          <span class="metric-label">Inflation rate</span>
-          <strong id="inflation">Loading</strong>
-          <p>Annual CPI inflation</p>
-        </article>
-        <article class="indicator-card">
-          <span class="metric-label">CPI</span>
-          <strong id="cpi">Loading</strong>
-          <p>Consumer Price Index</p>
-        </article>
-        <article class="indicator-card">
-          <span class="metric-label">Housing starts</span>
-          <strong id="housing">Loading</strong>
-          <p>New residential construction</p>
-        </article>
-        <article class="indicator-card">
-          <span class="metric-label">EUR / USD</span>
-          <strong id="eurusd">Loading</strong>
-          <p id="fx-note">Exchange rate</p>
-        </article>
-      </section>
-
-      <section class="dashboard-panel">
+      <!-- ── Broad Market ── -->
+      <section class="dash-section" id="section-market">
         <div class="section-heading">
-          <p class="eyebrow">Watchlist</p>
-          <h2>Key signals</h2>
+          <p class="eyebrow">Broad Market</p>
+          <h2>Equity indices</h2>
         </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Indicator</th>
-                <th>Category</th>
-                <th>Why it matters</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Stock prices</td>
-                <td>Markets</td>
-                <td>Tracks risk appetite, earnings expectations, and liquidity.</td>
-              </tr>
-              <tr>
-                <td>Inflation rate and CPI</td>
-                <td>Macro</td>
-                <td>Shows price pressure and informs rate expectations.</td>
-              </tr>
-              <tr>
-                <td>Housing starts</td>
-                <td>Housing</td>
-                <td>Signals construction demand and household formation trends.</td>
-              </tr>
-              <tr>
-                <td>Exchange rates</td>
-                <td>Currency</td>
-                <td>Reflects relative growth, rates, trade, and capital flows.</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="indicator-grid-5" aria-live="polite">
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">S&amp;P 500</span>
+              <span class="ic-source" id="sp500-src">Stooq</span>
+            </div>
+            <strong class="ic-value" id="sp500">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="sp500-chg">--</span>
+              <span class="ic-date" id="sp500-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="sp500-prev">--</span></div>
+          </article>
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">Dow Jones</span>
+              <span class="ic-source" id="dow-src">Stooq</span>
+            </div>
+            <strong class="ic-value" id="dow">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="dow-chg">--</span>
+              <span class="ic-date" id="dow-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="dow-prev">--</span></div>
+          </article>
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">Nasdaq Comp.</span>
+              <span class="ic-source" id="nasdaq-src">Stooq</span>
+            </div>
+            <strong class="ic-value" id="nasdaq">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="nasdaq-chg">--</span>
+              <span class="ic-date" id="nasdaq-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="nasdaq-prev">--</span></div>
+          </article>
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">Russell 2000</span>
+              <span class="ic-source" id="russell2000-src">Stooq</span>
+            </div>
+            <strong class="ic-value" id="russell2000">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="russell2000-chg">--</span>
+              <span class="ic-date" id="russell2000-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="russell2000-prev">--</span></div>
+          </article>
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">VIX</span>
+              <span class="ic-source" id="vix-src">Stooq</span>
+            </div>
+            <strong class="ic-value" id="vix">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="vix-chg">--</span>
+              <span class="ic-date" id="vix-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="vix-prev">--</span></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ── AI, Tech & Communications Sector ETFs ── -->
+      <section class="dash-section" id="section-etfs">
+        <div class="section-heading">
+          <p class="eyebrow">AI, Tech &amp; Communications</p>
+          <h2>Sector ETFs</h2>
+        </div>
+        <div class="indicator-grid-3" aria-live="polite">
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">QQQ</span>
+              <span class="ic-source">Stooq · Nasdaq-100</span>
+            </div>
+            <strong class="ic-value" id="qqq">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="qqq-chg">--</span>
+              <span class="ic-date" id="qqq-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="qqq-prev">--</span></div>
+          </article>
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">XLC</span>
+              <span class="ic-source">Stooq · Comm. Services</span>
+            </div>
+            <strong class="ic-value" id="xlc">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="xlc-chg">--</span>
+              <span class="ic-date" id="xlc-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="xlc-prev">--</span></div>
+          </article>
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">BOTZ</span>
+              <span class="ic-source">Stooq · AI &amp; Robotics</span>
+            </div>
+            <strong class="ic-value" id="botz">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="botz-chg">--</span>
+              <span class="ic-date" id="botz-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="botz-prev">--</span></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ── Rates & Inflation ── -->
+      <section class="dash-section" id="section-macro">
+        <div class="section-heading">
+          <p class="eyebrow">Macro</p>
+          <h2>Rates, inflation &amp; labor</h2>
+        </div>
+        <div class="indicator-grid-4" aria-live="polite">
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">Fed Funds Rate</span>
+              <span class="ic-source">FRED · FEDFUNDS</span>
+            </div>
+            <strong class="ic-value" id="fed-funds">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="fed-funds-chg">--</span>
+              <span class="ic-date" id="fed-funds-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="fed-funds-prev">--</span></div>
+          </article>
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">10-yr Treasury</span>
+              <span class="ic-source">FRED · GS10</span>
+            </div>
+            <strong class="ic-value" id="treasury10y">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="treasury10y-chg">--</span>
+              <span class="ic-date" id="treasury10y-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="treasury10y-prev">--</span></div>
+          </article>
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">CPI (YoY)</span>
+              <span class="ic-source">FRED · FPCPITOTLZGUSA</span>
+            </div>
+            <strong class="ic-value" id="inflation">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="inflation-chg">--</span>
+              <span class="ic-date" id="inflation-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="inflation-prev">--</span></div>
+          </article>
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">CPI Level</span>
+              <span class="ic-source">FRED · CPIAUCSL</span>
+            </div>
+            <strong class="ic-value" id="cpi">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="cpi-chg">--</span>
+              <span class="ic-date" id="cpi-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="cpi-prev">--</span></div>
+          </article>
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">Core CPI Level</span>
+              <span class="ic-source">FRED · CPILFESL</span>
+            </div>
+            <strong class="ic-value" id="core-cpi">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="core-cpi-chg">--</span>
+              <span class="ic-date" id="core-cpi-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="core-cpi-prev">--</span></div>
+          </article>
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">PCE Index</span>
+              <span class="ic-source">FRED · PCEPI</span>
+            </div>
+            <strong class="ic-value" id="pce">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="pce-chg">--</span>
+              <span class="ic-date" id="pce-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="pce-prev">--</span></div>
+          </article>
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">Unemployment</span>
+              <span class="ic-source">FRED · UNRATE</span>
+            </div>
+            <strong class="ic-value" id="unemployment">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="unemployment-chg">--</span>
+              <span class="ic-date" id="unemployment-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="unemployment-prev">--</span></div>
+          </article>
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">UMich Sentiment</span>
+              <span class="ic-source">FRED · UMCSENT</span>
+            </div>
+            <strong class="ic-value" id="umich">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="umich-chg">--</span>
+              <span class="ic-date" id="umich-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="umich-prev">--</span></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ── Housing ── -->
+      <section class="dash-section" id="section-housing">
+        <div class="section-heading">
+          <p class="eyebrow">Housing</p>
+          <h2>Real estate &amp; mortgage</h2>
+        </div>
+        <div class="indicator-grid-3" aria-live="polite">
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">30-yr Mortgage</span>
+              <span class="ic-source">FRED · MORTGAGE30US</span>
+            </div>
+            <strong class="ic-value" id="mortgage30">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="mortgage30-chg">--</span>
+              <span class="ic-date" id="mortgage30-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="mortgage30-prev">--</span></div>
+          </article>
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">15-yr Mortgage</span>
+              <span class="ic-source">FRED · MORTGAGE15US</span>
+            </div>
+            <strong class="ic-value" id="mortgage15">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="mortgage15-chg">--</span>
+              <span class="ic-date" id="mortgage15-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="mortgage15-prev">--</span></div>
+          </article>
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">Housing Starts</span>
+              <span class="ic-source">FRED · HOUST</span>
+            </div>
+            <strong class="ic-value" id="housing">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="housing-chg">--</span>
+              <span class="ic-date" id="housing-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="housing-prev">--</span></div>
+          </article>
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">Existing Home Sales</span>
+              <span class="ic-source">FRED · EXHOSLUSM495S</span>
+            </div>
+            <strong class="ic-value" id="home-sales">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="home-sales-chg">--</span>
+              <span class="ic-date" id="home-sales-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="home-sales-prev">--</span></div>
+          </article>
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">Case-Shiller Index</span>
+              <span class="ic-source">FRED · CSUSHPISA</span>
+            </div>
+            <strong class="ic-value" id="case-shiller">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="case-shiller-chg">--</span>
+              <span class="ic-date" id="case-shiller-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="case-shiller-prev">--</span></div>
+          </article>
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">Median Home Price</span>
+              <span class="ic-source">FRED · MSPUS</span>
+            </div>
+            <strong class="ic-value" id="median-home">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="median-home-chg">--</span>
+              <span class="ic-date" id="median-home-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="median-home-prev">--</span></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ── AI & Tech Sector (static) ── -->
+      <section class="dash-section" id="section-ai-sector">
+        <div class="section-heading">
+          <p class="eyebrow">Startup Financial Dashboard — AI, Tech &amp; Communications</p>
+          <h2>Sector signals</h2>
+        </div>
+
+        <!-- AI/Tech Funding Trends -->
+        <div class="static-data-wrap">
+          <h3>AI &amp; Technology Funding Trends</h3>
+          <p class="static-data-meta">Source: CB Insights, PitchBook reports, NVCA · Manually maintained · Updated Q1 2025</p>
+          <div class="table-wrap" style="border:0;border-radius:0 0 10px 10px;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Period</th>
+                  <th>Global AI Funding (est.)</th>
+                  <th>Deal Count (est.)</th>
+                  <th>Notable Rounds</th>
+                  <th>Trend</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Q1 2025</td>
+                  <td>~$28B</td>
+                  <td>~1,100</td>
+                  <td>xAI $6B, Thinking Machines $2B</td>
+                  <td><span class="badge badge-green">↑ Rising</span></td>
+                </tr>
+                <tr>
+                  <td>Q4 2024</td>
+                  <td>~$24B</td>
+                  <td>~980</td>
+                  <td>OpenAI $6.6B, Anthropic $4B</td>
+                  <td><span class="badge badge-green">↑ Rising</span></td>
+                </tr>
+                <tr>
+                  <td>Q3 2024</td>
+                  <td>~$18B</td>
+                  <td>~920</td>
+                  <td>Safe Superintelligence $1B, Harvey $100M</td>
+                  <td><span class="badge badge-blue">→ Stable</span></td>
+                </tr>
+                <tr>
+                  <td>Q2 2024</td>
+                  <td>~$22B</td>
+                  <td>~1,040</td>
+                  <td>Scale AI $1B, Mistral €600M</td>
+                  <td><span class="badge badge-green">↑ Rising</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SaaS & AI Valuation Multiples -->
+        <div class="static-data-wrap" style="margin-top:20px;">
+          <h3>SaaS &amp; AI Valuation Multiples (Public Benchmarks)</h3>
+          <p class="static-data-meta">Source: Yahoo Finance, SEC 10-K/10-Q filings, company investor relations pages · Approximate P/S ratios · Updated Q1 2025</p>
+          <div class="table-wrap" style="border:0;border-radius:0 0 10px 10px;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Company</th>
+                  <th>Ticker</th>
+                  <th>Category</th>
+                  <th>P/S Ratio (approx.)</th>
+                  <th>Revenue Growth (YoY)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Palantir Technologies</td>
+                  <td class="td-muted">PLTR</td>
+                  <td>AI / Data analytics</td>
+                  <td>~35×</td>
+                  <td><span class="badge badge-green">+36%</span></td>
+                </tr>
+                <tr>
+                  <td>Snowflake</td>
+                  <td class="td-muted">SNOW</td>
+                  <td>Cloud data platform</td>
+                  <td>~14×</td>
+                  <td><span class="badge badge-green">+29%</span></td>
+                </tr>
+                <tr>
+                  <td>Datadog</td>
+                  <td class="td-muted">DDOG</td>
+                  <td>Observability / AI infra</td>
+                  <td>~18×</td>
+                  <td><span class="badge badge-green">+26%</span></td>
+                </tr>
+                <tr>
+                  <td>ServiceNow</td>
+                  <td class="td-muted">NOW</td>
+                  <td>Enterprise SaaS / AI</td>
+                  <td>~16×</td>
+                  <td><span class="badge badge-green">+22%</span></td>
+                </tr>
+                <tr>
+                  <td>Salesforce</td>
+                  <td class="td-muted">CRM</td>
+                  <td>Enterprise CRM</td>
+                  <td>~7×</td>
+                  <td><span class="badge badge-blue">+9%</span></td>
+                </tr>
+                <tr>
+                  <td>MongoDB</td>
+                  <td class="td-muted">MDB</td>
+                  <td>Database / developer tools</td>
+                  <td>~10×</td>
+                  <td><span class="badge badge-blue">+13%</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- IPO Pipeline -->
+        <div class="static-data-wrap" style="margin-top:20px;">
+          <h3>IPO Pipeline &amp; Recent Tech IPOs</h3>
+          <p class="static-data-meta">Source: SEC EDGAR (S-1 filings), Nasdaq IPO Calendar, exchange press releases · Manually maintained · Updated Q1 2025</p>
+          <div class="table-wrap" style="border:0;border-radius:0 0 10px 10px;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Company</th>
+                  <th>Sector</th>
+                  <th>Status</th>
+                  <th>Est. Valuation</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Klarna</td>
+                  <td>Fintech / BNPL</td>
+                  <td><span class="badge badge-blue">Filed S-1</span></td>
+                  <td>~$15B</td>
+                  <td>Filed with SEC early 2025</td>
+                </tr>
+                <tr>
+                  <td>Cerebras Systems</td>
+                  <td>AI hardware</td>
+                  <td><span class="badge badge-gold">Pending</span></td>
+                  <td>~$8B</td>
+                  <td>Filed S-1 Oct 2024; regulatory review ongoing</td>
+                </tr>
+                <tr>
+                  <td>CoreWeave</td>
+                  <td>AI cloud / GPU infra</td>
+                  <td><span class="badge badge-green">IPO'd Mar 2025</span></td>
+                  <td>~$19B</td>
+                  <td>Listed on Nasdaq (CRWV) March 2025</td>
+                </tr>
+                <tr>
+                  <td>StubHub</td>
+                  <td>Marketplace / ticketing</td>
+                  <td><span class="badge badge-blue">Filed S-1</span></td>
+                  <td>~$16B</td>
+                  <td>Filed with SEC 2025</td>
+                </tr>
+                <tr>
+                  <td>Chime</td>
+                  <td>Neobank / fintech</td>
+                  <td><span class="badge badge-gold">Rumored 2025</span></td>
+                  <td>~$25B</td>
+                  <td>Reported confidential filing</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- AI Compute Costs -->
+        <div class="static-data-wrap" style="margin-top:20px;">
+          <h3>AI Compute Cost Index — GPU &amp; Cloud Pricing</h3>
+          <p class="static-data-meta">Source: AWS, Azure, Google Cloud public pricing pages; retail GPU prices from Newegg/B&H · Manually maintained · Updated Q1 2025</p>
+          <div class="table-wrap" style="border:0;border-radius:0 0 10px 10px;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Resource</th>
+                  <th>Provider</th>
+                  <th>GPU / Chip</th>
+                  <th>Price</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>p3.2xlarge (on-demand)</td>
+                  <td>AWS</td>
+                  <td>Nvidia V100 (1×)</td>
+                  <td>$3.06 / hr</td>
+                  <td>us-east-1; training workloads</td>
+                </tr>
+                <tr>
+                  <td>p4d.24xlarge (on-demand)</td>
+                  <td>AWS</td>
+                  <td>Nvidia A100 (8×)</td>
+                  <td>$32.77 / hr</td>
+                  <td>Distributed large-model training</td>
+                </tr>
+                <tr>
+                  <td>NC H100 v5 (on-demand)</td>
+                  <td>Azure</td>
+                  <td>Nvidia H100 (8×)</td>
+                  <td>~$98 / hr</td>
+                  <td>Latest-gen; inference + training</td>
+                </tr>
+                <tr>
+                  <td>TPU v4 Pod slice</td>
+                  <td>Google Cloud</td>
+                  <td>TPU v4 (8 chips)</td>
+                  <td>~$14.40 / hr</td>
+                  <td>JAX / TensorFlow workloads</td>
+                </tr>
+                <tr>
+                  <td>RTX 4090 (retail)</td>
+                  <td>Consumer / co-lo</td>
+                  <td>Nvidia Ada Lovelace</td>
+                  <td>~$1,600–$1,900</td>
+                  <td>Consumer GPU; local inference</td>
+                </tr>
+                <tr>
+                  <td>H100 PCIe (retail)</td>
+                  <td>Datacenter card</td>
+                  <td>Nvidia Hopper</td>
+                  <td>~$28,000–$32,000</td>
+                  <td>On-prem large-model deployments</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── FX ── -->
+      <section class="dash-section" id="section-fx">
+        <div class="section-heading">
+          <p class="eyebrow">Currency</p>
+          <h2>Exchange rates</h2>
+        </div>
+        <div class="indicator-grid-3" aria-live="polite">
+          <article class="indicator-card animate-in">
+            <div class="ic-header">
+              <span class="metric-label">EUR / USD</span>
+              <span class="ic-source" id="eurusd-src">Frankfurter</span>
+            </div>
+            <strong class="ic-value" id="eurusd">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="eurusd-chg">--</span>
+              <span class="ic-date" id="eurusd-date"></span>
+            </div>
+            <div class="ic-prev">Prev: <span id="eurusd-prev">--</span></div>
+          </article>
         </div>
       </section>
     </main>
 
     <footer class="site-footer">
-      <span>Data sources: public FRED and exchangerate APIs where available</span>
-      <span id="updated-at">Last updated: not yet loaded</span>
+      <span>© 2026 Jed Buckert · Data: FRED, Stooq (delayed), Frankfurter, public filings</span>
+      <span id="footer-updated">Last updated: not yet loaded</span>
     </footer>
+
     <script src="dashboard.js"></script>
   </body>
 </html>

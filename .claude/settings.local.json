@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -E \"^[A-Z][a-zA-Z ]{3,}|[0-9]{4}\")",
+      "Bash(python3 *)",
+      "Bash(node scripts/fetch-data.js)"
+    ]
+  }
+}
