@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>J. Buck | Financial Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html">J. Buck</a>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="index.html">Projects</a>
+        <a href="resume.html">CV / Resume</a>
+        <a href="dashboard.html" aria-current="page">Financial Dashboard</a>
+      </nav>
+    </header>
+
+    <main class="page-shell">
+      <section class="dashboard-header">
+        <div>
+          <p class="eyebrow">Financial Dashboard</p>
+          <h1>Market and economic indicators</h1>
+          <p class="lede">A compact view for stocks, inflation, CPI, housing, and exchange rates.</p>
+        </div>
+        <button class="button primary" id="refresh-data" type="button">Refresh data</button>
+      </section>
+
+      <section class="indicator-grid" aria-live="polite">
+        <article class="indicator-card">
+          <span class="metric-label">S&P 500</span>
+          <strong id="sp500">Loading</strong>
+          <p id="sp500-note">Stock index proxy</p>
+        </article>
+        <article class="indicator-card">
+          <span class="metric-label">NASDAQ</span>
+          <strong id="nasdaq">Loading</strong>
+          <p id="nasdaq-note">Technology index proxy</p>
+        </article>
+        <article class="indicator-card">
+          <span class="metric-label">Inflation rate</span>
+          <strong id="inflation">Loading</strong>
+          <p>Annual CPI inflation</p>
+        </article>
+        <article class="indicator-card">
+          <span class="metric-label">CPI</span>
+          <strong id="cpi">Loading</strong>
+          <p>Consumer Price Index</p>
+        </article>
+        <article class="indicator-card">
+          <span class="metric-label">Housing starts</span>
+          <strong id="housing">Loading</strong>
+          <p>New residential construction</p>
+        </article>
+        <article class="indicator-card">
+          <span class="metric-label">EUR / USD</span>
+          <strong id="eurusd">Loading</strong>
+          <p id="fx-note">Exchange rate</p>
+        </article>
+      </section>
+
+      <section class="dashboard-panel">
+        <div class="section-heading">
+          <p class="eyebrow">Watchlist</p>
+          <h2>Key signals</h2>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Indicator</th>
+                <th>Category</th>
+                <th>Why it matters</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Stock prices</td>
+                <td>Markets</td>
+                <td>Tracks risk appetite, earnings expectations, and liquidity.</td>
+              </tr>
+              <tr>
+                <td>Inflation rate and CPI</td>
+                <td>Macro</td>
+                <td>Shows price pressure and informs rate expectations.</td>
+              </tr>
+              <tr>
+                <td>Housing starts</td>
+                <td>Housing</td>
+                <td>Signals construction demand and household formation trends.</td>
+              </tr>
+              <tr>
+                <td>Exchange rates</td>
+                <td>Currency</td>
+                <td>Reflects relative growth, rates, trade, and capital flows.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>Data sources: public FRED and exchangerate APIs where available</span>
+      <span id="updated-at">Last updated: not yet loaded</span>
+    </footer>
+    <script src="dashboard.js"></script>
+  </body>
+</html>
