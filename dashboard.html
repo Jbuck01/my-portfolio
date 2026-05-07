@@ -41,6 +41,125 @@
         </div>
       </section>
 
+      <!-- ── Company Lookup ── -->
+      <section class="dash-section" id="section-lookup">
+        <div class="section-heading">
+          <p class="eyebrow">Company Lookup</p>
+          <h2>Investment-banker view</h2>
+          <p class="muted">Search any U.S.-listed ticker for a quote, valuation, profitability, growth, balance-sheet snapshot, and 1-year sparkline. Data: Yahoo Finance (delayed) via public endpoints.</p>
+        </div>
+
+        <div class="lookup-bar">
+          <div class="lookup-input-wrap">
+            <input
+              id="ticker-input"
+              type="text"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="Search a ticker or company (e.g. AAPL, NVDA, Microsoft)"
+              aria-label="Ticker search"
+              maxlength="40">
+            <ul id="ticker-suggestions" class="lookup-suggestions" hidden role="listbox"></ul>
+          </div>
+          <button class="button primary" id="ticker-go" type="button">Lookup</button>
+        </div>
+
+        <p class="lookup-examples">
+          Try:
+          <button type="button" class="lookup-chip" data-symbol="AAPL">AAPL</button>
+          <button type="button" class="lookup-chip" data-symbol="MSFT">MSFT</button>
+          <button type="button" class="lookup-chip" data-symbol="NVDA">NVDA</button>
+          <button type="button" class="lookup-chip" data-symbol="GOOGL">GOOGL</button>
+          <button type="button" class="lookup-chip" data-symbol="META">META</button>
+          <button type="button" class="lookup-chip" data-symbol="TSLA">TSLA</button>
+          <button type="button" class="lookup-chip" data-symbol="JPM">JPM</button>
+        </p>
+
+        <div id="lookup-status" class="lookup-status" role="status" aria-live="polite" hidden></div>
+
+        <article id="lookup-result" class="lookup-result" hidden>
+          <header class="lookup-header">
+            <div>
+              <p class="lookup-symbol"><span id="lk-symbol">--</span> <span class="lookup-exch" id="lk-exch"></span></p>
+              <h3 id="lk-name">--</h3>
+              <p class="lookup-meta"><span id="lk-sector">--</span> · <span id="lk-industry">--</span></p>
+            </div>
+            <div class="lookup-price-block">
+              <strong class="lookup-price" id="lk-price">--</strong>
+              <span class="lookup-change neutral" id="lk-change">--</span>
+              <span class="lookup-asof" id="lk-asof"></span>
+            </div>
+          </header>
+
+          <svg id="lk-spark" class="lookup-spark" viewBox="0 0 600 120" preserveAspectRatio="none" aria-label="One-year price chart">
+            <path id="lk-spark-fill" class="spark-fill" d=""></path>
+            <path id="lk-spark-line" class="spark-line" d=""></path>
+          </svg>
+          <p class="lookup-spark-caption">1-year daily close · Yahoo Finance (delayed)</p>
+
+          <div class="lookup-grid">
+            <section class="lookup-block">
+              <h4>Quote</h4>
+              <dl class="kv-grid">
+                <div><dt>Day range</dt><dd id="lk-day-range">--</dd></div>
+                <div><dt>52-wk range</dt><dd id="lk-52w-range">--</dd></div>
+                <div><dt>Volume</dt><dd id="lk-volume">--</dd></div>
+                <div><dt>Avg. volume</dt><dd id="lk-avg-volume">--</dd></div>
+                <div><dt>Prev. close</dt><dd id="lk-prev-close">--</dd></div>
+                <div><dt>Currency</dt><dd id="lk-currency">--</dd></div>
+              </dl>
+            </section>
+
+            <section class="lookup-block">
+              <h4>Valuation</h4>
+              <dl class="kv-grid">
+                <div><dt>Market cap</dt><dd id="lk-mktcap">--</dd></div>
+                <div><dt>Enterprise value</dt><dd id="lk-ev">--</dd></div>
+                <div><dt>P/E (TTM)</dt><dd id="lk-pe">--</dd></div>
+                <div><dt>Forward P/E</dt><dd id="lk-fpe">--</dd></div>
+                <div><dt>P/S (TTM)</dt><dd id="lk-ps">--</dd></div>
+                <div><dt>EV / EBITDA</dt><dd id="lk-ev-ebitda">--</dd></div>
+                <div><dt>EV / Revenue</dt><dd id="lk-ev-rev">--</dd></div>
+                <div><dt>PEG</dt><dd id="lk-peg">--</dd></div>
+              </dl>
+            </section>
+
+            <section class="lookup-block">
+              <h4>Profitability &amp; growth</h4>
+              <dl class="kv-grid">
+                <div><dt>Revenue (TTM)</dt><dd id="lk-rev">--</dd></div>
+                <div><dt>Revenue growth (YoY)</dt><dd id="lk-rev-growth">--</dd></div>
+                <div><dt>Gross margin</dt><dd id="lk-gross-margin">--</dd></div>
+                <div><dt>Operating margin</dt><dd id="lk-op-margin">--</dd></div>
+                <div><dt>Profit margin</dt><dd id="lk-profit-margin">--</dd></div>
+                <div><dt>EPS (TTM)</dt><dd id="lk-eps">--</dd></div>
+                <div><dt>ROE</dt><dd id="lk-roe">--</dd></div>
+                <div><dt>ROA</dt><dd id="lk-roa">--</dd></div>
+              </dl>
+            </section>
+
+            <section class="lookup-block">
+              <h4>Balance sheet</h4>
+              <dl class="kv-grid">
+                <div><dt>Cash &amp; equivalents</dt><dd id="lk-cash">--</dd></div>
+                <div><dt>Total debt</dt><dd id="lk-debt">--</dd></div>
+                <div><dt>Net debt</dt><dd id="lk-net-debt">--</dd></div>
+                <div><dt>Debt / equity</dt><dd id="lk-de">--</dd></div>
+                <div><dt>Current ratio</dt><dd id="lk-current">--</dd></div>
+                <div><dt>Free cash flow</dt><dd id="lk-fcf">--</dd></div>
+                <div><dt>Dividend yield</dt><dd id="lk-div-yield">--</dd></div>
+                <div><dt>Beta</dt><dd id="lk-beta">--</dd></div>
+              </dl>
+            </section>
+          </div>
+
+          <p class="lookup-disclaimer">
+            Quotes delayed; fundamentals based on Yahoo Finance summary modules and may lag the latest filings.
+            Not investment advice.
+          </p>
+        </article>
+      </section>
+
       <!-- ── Broad Market ── -->
       <section class="dash-section" id="section-market">
         <div class="section-heading">

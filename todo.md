@@ -124,3 +124,6 @@
 
 - [x] **Seed snapshot.json with real stock data so dashboard loads values immediately**
   Brief description: Ran scripts/fetch-data.js locally to populate data/snapshot.json with current Yahoo Finance prices for all 8 symbols (S&P 500, Dow, Nasdaq, Russell 2000, VIX, QQQ, XLC, BOTZ) and EUR/USD. FRED data populates automatically on first GitHub Actions run.
+
+- [x] **Add Company Lookup ("investment-banker view") section to financial dashboard**
+  Brief description: Added a ticker search at the top of dashboard.html with autocomplete (Yahoo Finance search), 1-year sparkline, quote summary (price, day/52w range, volume, prev. close), valuation (market cap, EV, P/E, fwd P/E, P/S, EV/EBITDA, EV/Revenue, PEG), profitability/growth (revenue TTM, rev growth YoY, gross/operating/profit margins, EPS, ROE, ROA), and balance sheet (cash, debt, net debt, D/E, current ratio, FCF, dividend yield, beta). Chart endpoint is hit directly; quoteSummary fundamentals go through CORS proxies (corsproxy.io → allorigins.win → direct) since Yahoo doesn't expose CORS headers on that endpoint. Deep-linkable via #lookup=TICKER.

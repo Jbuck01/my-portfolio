@@ -372,3 +372,411 @@ document.getElementById("dismiss-warning")?.addEventListener("click", () => {
 
 // Auto-load on page open
 refreshDashboard();
+
+// ── Company Lookup ────────────────────────────────────────────────────────────
+
+const LOOKUP_PROXIES = [
+  url => `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
+  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  url => url
+];
+
+async function fetchWithProxy(url) {
+  let lastErr;
+  for (const wrap of LOOKUP_PROXIES) {
+    try {
+      const res = await fetch(wrap(url), { headers: { Accept: "application/json" } });
+      if (!res.ok) { lastErr = new Error(`HTTP ${res.status}`); continue; }
+      return await res.json();
+    } catch (err) {
+      lastErr = err;
+    }
+  }
+  throw lastErr ?? new Error("All proxies failed");
+}
+
+function rawOrNull(v) {
+  if (v == null) return null;
+  if (typeof v === "object") return v.raw ?? null;
+  return Number.isFinite(v) ? v : null;
+}
+
+const lkFmt = {
+  bigCurrency(n) {
+    if (!Number.isFinite(n)) return "--";
+    const abs = Math.abs(n);
+    if (abs >= 1e12) return "$" + (n / 1e12).toFixed(2) + "T";
+    if (abs >= 1e9)  return "$" + (n / 1e9).toFixed(2) + "B";
+    if (abs >= 1e6)  return "$" + (n / 1e6).toFixed(2) + "M";
+    if (abs >= 1e3)  return "$" + (n / 1e3).toFixed(2) + "K";
+    return "$" + n.toFixed(2);
+  },
+  bigNumber(n) {
+    if (!Number.isFinite(n)) return "--";
+    const abs = Math.abs(n);
+    if (abs >= 1e9) return (n / 1e9).toFixed(2) + "B";
+    if (abs >= 1e6) return (n / 1e6).toFixed(2) + "M";
+    if (abs >= 1e3) return (n / 1e3).toFixed(2) + "K";
+    return n.toLocaleString("en-US");
+  },
+  ratio(n, decimals = 2) {
+    return Number.isFinite(n) ? n.toFixed(decimals) + "×" : "--";
+  },
+  multiple(n, decimals = 2) {
+    return Number.isFinite(n) ? n.toFixed(decimals) : "--";
+  },
+  pct(n, decimals = 2) {
+    if (!Number.isFinite(n)) return "--";
+    return (n * 100).toFixed(decimals) + "%";
+  },
+  pctDirect(n, decimals = 2) {
+    return Number.isFinite(n) ? n.toFixed(decimals) + "%" : "--";
+  },
+  price(n) {
+    return Number.isFinite(n)
+      ? "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      : "--";
+  },
+  range(lo, hi) {
+    if (!Number.isFinite(lo) || !Number.isFinite(hi)) return "--";
+    return `${lkFmt.price(lo)} – ${lkFmt.price(hi)}`;
+  }
+};
+
+function setLk(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
+function showLookupStatus(msg, isError = false) {
+  const el = document.getElementById("lookup-status");
+  if (!el) return;
+  el.textContent = msg;
+  el.className = "lookup-status" + (isError ? " error" : "");
+  el.hidden = false;
+}
+
+function hideLookupStatus() {
+  const el = document.getElementById("lookup-status");
+  if (el) el.hidden = true;
+}
+
+function showLookupResult() {
+  const el = document.getElementById("lookup-result");
+  if (el) el.hidden = false;
+}
+
+async function fetchYahooSearch(query) {
+  const url = `https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=8&newsCount=0`;
+  return await fetchWithProxy(url);
+}
+
+async function fetchYahooChart(symbol, range = "1y", interval = "1d") {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=${range}&interval=${interval}`;
+  // chart endpoint usually works direct; only fall back to proxy if it fails
+  try {
+    const res = await fetch(url, { headers: { Accept: "application/json" } });
+    if (res.ok) return await res.json();
+  } catch (_) { /* fall through */ }
+  return await fetchWithProxy(url);
+}
+
+async function fetchYahooSummary(symbol) {
+  const modules = [
+    "summaryDetail",
+    "defaultKeyStatistics",
+    "financialData",
+    "price",
+    "assetProfile",
+    "summaryProfile"
+  ].join(",");
+  const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(symbol)}?modules=${modules}`;
+  return await fetchWithProxy(url);
+}
+
+function buildSparkPaths(closes) {
+  const valid = closes.map((v, i) => ({ v, i })).filter(p => Number.isFinite(p.v));
+  if (valid.length < 2) return { line: "", fill: "" };
+  const w = 600, h = 120;
+  const min = Math.min(...valid.map(p => p.v));
+  const max = Math.max(...valid.map(p => p.v));
+  const range = (max - min) || 1;
+  const stepX = w / (valid.length - 1);
+  const pad = 6;
+  const usableH = h - pad * 2;
+  const points = valid.map((p, i) => {
+    const x = i * stepX;
+    const y = pad + usableH - ((p.v - min) / range) * usableH;
+    return [x, y];
+  });
+  const line = points.map(([x, y], i) => (i === 0 ? `M${x.toFixed(1)} ${y.toFixed(1)}` : `L${x.toFixed(1)} ${y.toFixed(1)}`)).join(" ");
+  const first = points[0], last = points[points.length - 1];
+  const fill = `${line} L${last[0].toFixed(1)} ${h} L${first[0].toFixed(1)} ${h} Z`;
+  return { line, fill };
+}
+
+function renderQuote(symbol, chartJson) {
+  const result = chartJson?.chart?.result?.[0];
+  if (!result) throw new Error(`No chart data for ${symbol}`);
+  const meta = result.meta || {};
+  const closes = result.indicators?.quote?.[0]?.close ?? [];
+
+  const price = meta.regularMarketPrice;
+  const prev  = meta.chartPreviousClose ?? meta.previousClose;
+  const change = (Number.isFinite(price) && Number.isFinite(prev)) ? price - prev : null;
+  const changePct = (change != null && prev) ? (change / prev) * 100 : null;
+
+  setLk("lk-symbol", (meta.symbol || symbol).toUpperCase());
+  setLk("lk-exch", meta.exchangeName ? `· ${meta.exchangeName}` : "");
+  setLk("lk-price", lkFmt.price(price));
+  setLk("lk-prev-close", lkFmt.price(prev));
+  setLk("lk-currency", meta.currency || "--");
+  setLk("lk-day-range", lkFmt.range(meta.regularMarketDayLow, meta.regularMarketDayHigh));
+  setLk("lk-52w-range", lkFmt.range(meta.fiftyTwoWeekLow, meta.fiftyTwoWeekHigh));
+  setLk("lk-volume", lkFmt.bigNumber(meta.regularMarketVolume));
+
+  const chgEl = document.getElementById("lk-change");
+  if (chgEl) {
+    if (change == null) {
+      chgEl.textContent = "--";
+      chgEl.className = "lookup-change neutral";
+    } else {
+      const sign = change >= 0 ? "+" : "";
+      chgEl.textContent = `${sign}${change.toFixed(2)} (${sign}${changePct.toFixed(2)}%)`;
+      chgEl.className = "lookup-change " + (change >= 0 ? "positive" : "negative");
+    }
+  }
+
+  if (Number.isFinite(meta.regularMarketTime)) {
+    const d = new Date(meta.regularMarketTime * 1000);
+    setLk("lk-asof", "As of " + d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" }));
+  } else {
+    setLk("lk-asof", "");
+  }
+
+  const { line, fill } = buildSparkPaths(closes);
+  const lineEl = document.getElementById("lk-spark-line");
+  const fillEl = document.getElementById("lk-spark-fill");
+  if (lineEl) lineEl.setAttribute("d", line);
+  if (fillEl) fillEl.setAttribute("d", fill);
+}
+
+function renderFundamentals(summaryJson) {
+  const r = summaryJson?.quoteSummary?.result?.[0];
+  if (!r) return false;
+  const sd = r.summaryDetail || {};
+  const ks = r.defaultKeyStatistics || {};
+  const fd = r.financialData || {};
+  const pr = r.price || {};
+  const ap = r.assetProfile || r.summaryProfile || {};
+
+  // Header
+  if (pr.longName || pr.shortName) setLk("lk-name", pr.longName || pr.shortName);
+  if (ap.sector)   setLk("lk-sector",   ap.sector);
+  if (ap.industry) setLk("lk-industry", ap.industry);
+
+  // Quote extras
+  setLk("lk-avg-volume", lkFmt.bigNumber(rawOrNull(sd.averageVolume) ?? rawOrNull(sd.averageDailyVolume10Day)));
+
+  // Valuation
+  setLk("lk-mktcap",    lkFmt.bigCurrency(rawOrNull(sd.marketCap) ?? rawOrNull(pr.marketCap)));
+  setLk("lk-ev",        lkFmt.bigCurrency(rawOrNull(ks.enterpriseValue)));
+  setLk("lk-pe",        lkFmt.multiple(rawOrNull(sd.trailingPE)));
+  setLk("lk-fpe",       lkFmt.multiple(rawOrNull(sd.forwardPE) ?? rawOrNull(ks.forwardPE)));
+  setLk("lk-ps",        lkFmt.multiple(rawOrNull(sd.priceToSalesTrailing12Months)));
+  setLk("lk-ev-ebitda", lkFmt.multiple(rawOrNull(ks.enterpriseToEbitda)));
+  setLk("lk-ev-rev",    lkFmt.multiple(rawOrNull(ks.enterpriseToRevenue)));
+  setLk("lk-peg",       lkFmt.multiple(rawOrNull(ks.pegRatio)));
+
+  // Profitability & growth
+  setLk("lk-rev",           lkFmt.bigCurrency(rawOrNull(fd.totalRevenue)));
+  setLk("lk-rev-growth",    lkFmt.pct(rawOrNull(fd.revenueGrowth)));
+  setLk("lk-gross-margin",  lkFmt.pct(rawOrNull(fd.grossMargins)));
+  setLk("lk-op-margin",     lkFmt.pct(rawOrNull(fd.operatingMargins)));
+  setLk("lk-profit-margin", lkFmt.pct(rawOrNull(fd.profitMargins) ?? rawOrNull(ks.profitMargins)));
+  setLk("lk-eps",           lkFmt.price(rawOrNull(ks.trailingEps)));
+  setLk("lk-roe",           lkFmt.pct(rawOrNull(fd.returnOnEquity)));
+  setLk("lk-roa",           lkFmt.pct(rawOrNull(fd.returnOnAssets)));
+
+  // Balance sheet
+  const cash = rawOrNull(fd.totalCash);
+  const debt = rawOrNull(fd.totalDebt);
+  setLk("lk-cash",      lkFmt.bigCurrency(cash));
+  setLk("lk-debt",      lkFmt.bigCurrency(debt));
+  setLk("lk-net-debt",  lkFmt.bigCurrency(Number.isFinite(cash) && Number.isFinite(debt) ? (debt - cash) : null));
+  const de = rawOrNull(fd.debtToEquity);
+  setLk("lk-de",        Number.isFinite(de) ? (de / 100).toFixed(2) : "--");
+  setLk("lk-current",   lkFmt.multiple(rawOrNull(fd.currentRatio)));
+  setLk("lk-fcf",       lkFmt.bigCurrency(rawOrNull(fd.freeCashflow)));
+  setLk("lk-div-yield", lkFmt.pct(rawOrNull(sd.dividendYield)));
+  setLk("lk-beta",      lkFmt.multiple(rawOrNull(sd.beta) ?? rawOrNull(ks.beta)));
+
+  return true;
+}
+
+function clearFundamentals(name = "--") {
+  setLk("lk-name", name);
+  setLk("lk-sector", "—");
+  setLk("lk-industry", "—");
+  ["lk-avg-volume","lk-mktcap","lk-ev","lk-pe","lk-fpe","lk-ps","lk-ev-ebitda","lk-ev-rev","lk-peg",
+   "lk-rev","lk-rev-growth","lk-gross-margin","lk-op-margin","lk-profit-margin","lk-eps","lk-roe","lk-roa",
+   "lk-cash","lk-debt","lk-net-debt","lk-de","lk-current","lk-fcf","lk-div-yield","lk-beta"
+  ].forEach(id => setLk(id, "--"));
+}
+
+async function lookupTicker(rawSymbol) {
+  const symbol = String(rawSymbol || "").trim().toUpperCase();
+  if (!symbol) return;
+  hideSuggestions();
+  showLookupStatus(`Loading ${symbol}…`);
+
+  // 1) Chart (price + sparkline) – usually works direct
+  let chartJson;
+  try {
+    chartJson = await fetchYahooChart(symbol, "1y", "1d");
+  } catch (err) {
+    showLookupStatus(`Could not load price data for "${symbol}". ${err.message}`, true);
+    return;
+  }
+  if (chartJson?.chart?.error || !chartJson?.chart?.result?.[0]) {
+    showLookupStatus(`No price data for "${symbol}". Try a different ticker.`, true);
+    return;
+  }
+
+  clearFundamentals();
+  try {
+    renderQuote(symbol, chartJson);
+  } catch (err) {
+    showLookupStatus(`Could not parse price data: ${err.message}`, true);
+    return;
+  }
+  showLookupResult();
+  showLookupStatus("Loading fundamentals…");
+
+  // 2) Fundamentals via CORS proxy
+  try {
+    const summary = await fetchYahooSummary(symbol);
+    if (summary?.quoteSummary?.error) {
+      throw new Error(summary.quoteSummary.error.description || "Yahoo error");
+    }
+    const ok = renderFundamentals(summary);
+    if (!ok) throw new Error("No fundamentals returned");
+    hideLookupStatus();
+  } catch (err) {
+    console.warn("Fundamentals failed:", err);
+    setLk("lk-name", chartJson.chart.result[0].meta?.symbol || symbol);
+    showLookupStatus(`Showing price only — fundamentals unavailable (${err.message}). Public CORS proxies can rate-limit; try again in a moment.`, true);
+  }
+
+  const url = new URL(window.location.href);
+  url.hash = "lookup=" + symbol;
+  history.replaceState(null, "", url);
+}
+
+// ── Autocomplete ──────────────────────────────────────────────────────────────
+
+let suggestionState = { items: [], active: -1, controller: null };
+
+function hideSuggestions() {
+  const el = document.getElementById("ticker-suggestions");
+  if (el) { el.hidden = true; el.innerHTML = ""; }
+  suggestionState = { items: [], active: -1, controller: null };
+}
+
+function renderSuggestions(items) {
+  const el = document.getElementById("ticker-suggestions");
+  if (!el) return;
+  if (!items.length) { hideSuggestions(); return; }
+  suggestionState.items = items;
+  suggestionState.active = -1;
+  el.innerHTML = items.map((q, i) => `
+    <li role="option" data-index="${i}" data-symbol="${q.symbol}">
+      <span class="sg-symbol">${q.symbol}</span>
+      <span class="sg-name">${q.shortname || q.longname || ""}</span>
+      <span class="sg-exch">${q.exchDisp || q.exchange || ""}</span>
+    </li>`).join("");
+  el.hidden = false;
+}
+
+function highlightSuggestion(idx) {
+  const el = document.getElementById("ticker-suggestions");
+  if (!el) return;
+  const lis = el.querySelectorAll("li");
+  lis.forEach((li, i) => li.classList.toggle("active", i === idx));
+  suggestionState.active = idx;
+}
+
+let searchTimer = null;
+function scheduleSearch(query) {
+  clearTimeout(searchTimer);
+  if (!query || query.length < 1) { hideSuggestions(); return; }
+  searchTimer = setTimeout(async () => {
+    try {
+      const json = await fetchYahooSearch(query);
+      const quotes = (json?.quotes || []).filter(q => q.symbol && (q.quoteType === "EQUITY" || q.quoteType === "ETF" || q.quoteType === "INDEX"));
+      renderSuggestions(quotes.slice(0, 8));
+    } catch (err) {
+      console.warn("Search failed:", err);
+      hideSuggestions();
+    }
+  }, 220);
+}
+
+// ── Wire up events ────────────────────────────────────────────────────────────
+
+const tickerInput = document.getElementById("ticker-input");
+const tickerGo    = document.getElementById("ticker-go");
+const suggestEl   = document.getElementById("ticker-suggestions");
+
+tickerInput?.addEventListener("input", e => scheduleSearch(e.target.value));
+tickerInput?.addEventListener("keydown", e => {
+  const items = suggestionState.items;
+  if (e.key === "ArrowDown" && items.length) {
+    e.preventDefault();
+    highlightSuggestion((suggestionState.active + 1) % items.length);
+  } else if (e.key === "ArrowUp" && items.length) {
+    e.preventDefault();
+    highlightSuggestion((suggestionState.active - 1 + items.length) % items.length);
+  } else if (e.key === "Enter") {
+    e.preventDefault();
+    const chosen = items[suggestionState.active];
+    if (chosen) lookupTicker(chosen.symbol);
+    else if (tickerInput.value.trim()) lookupTicker(tickerInput.value);
+  } else if (e.key === "Escape") {
+    hideSuggestions();
+  }
+});
+
+tickerInput?.addEventListener("blur", () => { setTimeout(hideSuggestions, 150); });
+
+suggestEl?.addEventListener("mousedown", e => {
+  const li = e.target.closest("li[data-symbol]");
+  if (!li) return;
+  e.preventDefault();
+  const sym = li.getAttribute("data-symbol");
+  if (tickerInput) tickerInput.value = sym;
+  lookupTicker(sym);
+});
+
+tickerGo?.addEventListener("click", () => {
+  const v = tickerInput?.value?.trim();
+  if (v) lookupTicker(v);
+});
+
+document.querySelectorAll(".lookup-chip").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const sym = btn.getAttribute("data-symbol");
+    if (!sym) return;
+    if (tickerInput) tickerInput.value = sym;
+    lookupTicker(sym);
+  });
+});
+
+// Deep-link support (#lookup=AAPL)
+{
+  const m = /lookup=([A-Za-z0-9.\-^]+)/.exec(window.location.hash || "");
+  if (m && tickerInput) {
+    tickerInput.value = m[1].toUpperCase();
+    lookupTicker(m[1]);
+  }
+}
