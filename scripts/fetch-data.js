@@ -1,42 +1,38 @@
 #!/usr/bin/env node
 "use strict";
 
-const https = require("https");
-const http  = require("http");
 const fs    = require("fs");
 const path  = require("path");
 
 // ── HTTP helpers ──────────────────────────────────────────────────────────────
 
-function httpRequest(url, options = {}, redirects = 5) {
-  return new Promise((resolve, reject) => {
-    const lib = url.startsWith("https") ? https : http;
-    const req = lib.get(url, {
+// FRED's TLS stack resets the connection for Node's legacy https.get(), even
+// with a browser User-Agent. Built-in fetch() (undici) negotiates TLS the same
+// way curl does and works fine, so we use it for every request.
+const BROWSER_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36";
+
+async function httpRequest(url, options = {}) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(new Error(`Timeout: ${url}`)), 20000);
+  try {
+    const res = await fetch(url, {
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; jbuck-portfolio/1.0)",
+        "User-Agent": BROWSER_UA,
         "Accept": "text/csv,text/plain,application/json,*/*",
+        "Accept-Language": "en-US,en;q=0.9",
         ...(options.headers || {})
-      }
-    }, (res) => {
-      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location && redirects > 0) {
-        res.resume();
-        const next = res.headers.location.startsWith("http")
-          ? res.headers.location
-          : new URL(res.headers.location, url).toString();
-        // Carry cookies forward on redirect
-        httpRequest(next, options, redirects - 1).then(resolve, reject);
-        return;
-      }
-      let body = "";
-      res.on("data", chunk => (body += chunk));
-      res.on("end", () => {
-        resolve({ status: res.statusCode, headers: res.headers, body });
-      });
-      res.on("error", reject);
+      },
+      redirect: "follow",
+      signal: ctrl.signal
     });
-    req.on("error", reject);
-    req.setTimeout(15000, () => { req.destroy(new Error(`Timeout: ${url}`)); });
-  });
+    const setCookie = typeof res.headers.getSetCookie === "function" ? res.headers.getSetCookie() : [];
+    const headers = Object.fromEntries(res.headers.entries());
+    if (setCookie.length) headers["set-cookie"] = setCookie;
+    const body = await res.text();
+    return { status: res.status, headers, body };
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 async function fetchText(url, options) {
