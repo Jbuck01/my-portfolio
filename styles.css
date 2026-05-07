@@ -593,333 +593,6 @@ a.contact-item:hover {
   color: var(--red);
 }
 
-/* ── Company Lookup ── */
-
-.lookup-bar {
-  display: flex;
-  gap: 10px;
-  align-items: stretch;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-}
-
-.lookup-input-wrap {
-  position: relative;
-  flex: 1 1 360px;
-  min-width: 260px;
-}
-
-#ticker-input {
-  width: 100%;
-  height: 48px;
-  padding: 0 16px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  color: var(--ink);
-  font: inherit;
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-
-#ticker-input::placeholder {
-  color: var(--muted);
-  font-weight: 500;
-}
-
-#ticker-input:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(93, 184, 245, 0.18);
-}
-
-.lookup-suggestions {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  right: 0;
-  z-index: 30;
-  margin: 0;
-  padding: 6px;
-  list-style: none;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  box-shadow: var(--shadow);
-  max-height: 320px;
-  overflow-y: auto;
-}
-
-.lookup-suggestions[hidden] { display: none; }
-
-.lookup-suggestions li {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 9px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.92rem;
-}
-
-.lookup-suggestions li:hover,
-.lookup-suggestions li.active {
-  background: var(--surface-2);
-}
-
-.lookup-suggestions .sg-symbol {
-  font-weight: 800;
-  color: var(--ink);
-}
-
-.lookup-suggestions .sg-name {
-  color: var(--muted);
-  font-weight: 500;
-  flex: 1;
-  text-align: left;
-  margin-left: 12px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.lookup-suggestions .sg-exch {
-  color: var(--muted);
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.lookup-examples {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  color: var(--muted);
-  font-size: 0.85rem;
-  margin: 0 0 18px;
-}
-
-.lookup-chip {
-  padding: 5px 11px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  color: var(--muted);
-  font: inherit;
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  transition: color 0.15s, border-color 0.15s, background 0.15s;
-}
-
-.lookup-chip:hover {
-  color: var(--ink);
-  border-color: var(--accent);
-  background: var(--surface-2);
-}
-
-.lookup-status {
-  padding: 14px 18px;
-  margin-bottom: 16px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-.lookup-status[hidden] { display: none; }
-
-.lookup-status.error {
-  border-color: rgba(224, 104, 104, 0.4);
-  color: var(--red);
-  background: rgba(224, 104, 104, 0.08);
-}
-
-.lookup-result {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  padding: 24px;
-  display: grid;
-  gap: 20px;
-}
-
-.lookup-result[hidden] { display: none; }
-
-.lookup-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 24px;
-  flex-wrap: wrap;
-  align-items: flex-start;
-}
-
-.lookup-symbol {
-  margin: 0 0 4px;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
-.lookup-exch {
-  color: var(--muted);
-  margin-left: 8px;
-}
-
-.lookup-header h3 {
-  margin: 0 0 4px;
-  font-size: clamp(1.4rem, 2.4vw, 1.9rem);
-  color: var(--ink);
-  letter-spacing: -0.005em;
-}
-
-.lookup-meta {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.88rem;
-}
-
-.lookup-price-block {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-  text-align: right;
-}
-
-.lookup-price {
-  font-size: clamp(1.8rem, 3vw, 2.6rem);
-  font-weight: 800;
-  color: var(--ink);
-  line-height: 1;
-}
-
-.lookup-change {
-  font-size: 0.95rem;
-  font-weight: 700;
-}
-
-.lookup-change.positive { color: var(--green); }
-.lookup-change.negative { color: var(--red); }
-.lookup-change.neutral  { color: var(--muted); }
-
-.lookup-asof {
-  font-size: 0.75rem;
-  color: var(--muted);
-  font-weight: 600;
-}
-
-.lookup-spark {
-  width: 100%;
-  height: 130px;
-  display: block;
-}
-
-.spark-line {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 1.6;
-  vector-effect: non-scaling-stroke;
-}
-
-.spark-fill {
-  fill: rgba(93, 184, 245, 0.14);
-  stroke: none;
-}
-
-.lookup-spark-caption {
-  margin: -8px 0 0;
-  font-size: 0.74rem;
-  color: var(--muted);
-  text-align: right;
-}
-
-.lookup-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.lookup-block {
-  background: var(--surface-2);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 18px 20px;
-}
-
-.lookup-block h4 {
-  margin: 0 0 14px;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
-.kv-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px 18px;
-  margin: 0;
-}
-
-.kv-grid > div {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 6px 0;
-  border-bottom: 1px dashed var(--line);
-}
-
-.kv-grid > div:nth-last-child(-n+2) {
-  border-bottom: 0;
-}
-
-.kv-grid dt {
-  color: var(--muted);
-  font-size: 0.82rem;
-  font-weight: 600;
-}
-
-.kv-grid dd {
-  margin: 0;
-  color: var(--ink);
-  font-size: 0.92rem;
-  font-weight: 700;
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-.lookup-disclaimer {
-  margin: 0;
-  font-size: 0.74rem;
-  color: var(--muted);
-  font-style: italic;
-}
-
-@media (max-width: 860px) {
-  .lookup-grid {
-    grid-template-columns: 1fr;
-  }
-  .kv-grid {
-    grid-template-columns: 1fr;
-  }
-  .kv-grid > div {
-    border-bottom: 1px dashed var(--line);
-  }
-  .kv-grid > div:last-child {
-    border-bottom: 0;
-  }
-}
-
 /* Stale data warning */
 
 .stale-warning {
@@ -1024,6 +697,310 @@ td {
 .badge-blue  { background: rgba(93, 184, 245, 0.15); color: var(--accent); }
 .badge-gold  { background: rgba(224, 170, 64, 0.15); color: var(--gold); }
 
+/* ── Market Overview (Feature 1) ── */
+
+.market-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.market-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  min-height: 220px;
+}
+
+.market-card .ic-value {
+  font-size: clamp(1.4rem, 2.2vw, 1.8rem);
+}
+
+.muted-inline {
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 0.85em;
+}
+
+.market-chart-wrap {
+  position: relative;
+  height: 90px;
+  margin-top: auto;
+}
+
+.market-chart {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ── Stock Research Panel (Feature 2 + 3) ── */
+
+.stock-search {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(220px, 1fr) auto;
+  gap: 14px;
+  align-items: end;
+  margin-bottom: 24px;
+}
+
+.stock-search-label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.stock-search input,
+.stock-search select {
+  min-height: 44px;
+  padding: 0 14px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.stock-search input:focus,
+.stock-search select:focus {
+  border-color: var(--accent);
+  background: var(--surface-2);
+}
+
+.stock-search select {
+  cursor: pointer;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+                    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: calc(100% - 18px) center, calc(100% - 13px) center;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 32px;
+}
+
+.stock-search select option {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.stock-error {
+  padding: 14px 18px;
+  border: 1px solid rgba(224, 104, 104, 0.3);
+  background: rgba(224, 104, 104, 0.08);
+  color: var(--red);
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.stock-loading {
+  padding: 18px;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.stock-panel {
+  display: grid;
+  gap: 24px;
+}
+
+.stock-panel[hidden] {
+  display: none;
+}
+
+.stock-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 24px;
+  padding: 22px 24px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.stock-header-main {
+  display: grid;
+  gap: 6px;
+}
+
+.stock-header-name {
+  margin: 0;
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.005em;
+}
+
+.stock-header-meta {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.stock-header-price {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.stock-header-price strong {
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-weight: 800;
+}
+
+.stock-header-side {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.stock-header-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.stock-header-row strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.metric-block {
+  display: grid;
+  gap: 12px;
+}
+
+.metric-block h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.metric-card {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.metric-card-label {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.metric-card-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.metric-card-sub {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.metric-card-sub.positive { color: var(--green); }
+.metric-card-sub.negative { color: var(--red); }
+
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.stock-chart-wrap {
+  position: relative;
+  height: 320px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.stock-chart-wrap.small {
+  height: 240px;
+}
+
+.stock-chart-wrap canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.news-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.news-list li {
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  transition: border-color 0.15s;
+}
+
+.news-list li:hover {
+  border-color: var(--accent);
+}
+
+.news-list a {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.news-list a:hover {
+  color: var(--accent);
+}
+
+.news-meta {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.peer-table th,
+.peer-table td {
+  white-space: nowrap;
+}
+
+.peer-table .ticker-cell {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Empty/null cells */
+.metric-card-value.empty,
+.peer-table td.empty {
+  color: var(--muted);
+}
+
 /* ── Footer ── */
 
 .site-footer {
@@ -1078,6 +1055,22 @@ td {
 
   .indicator-grid-4 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .market-overview-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .stock-header {
+    grid-template-columns: 1fr;
+  }
+
+  .stock-search {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stock-search button {
+    grid-column: 1 / -1;
   }
 }
 
@@ -1147,6 +1140,22 @@ td {
   .indicator-grid-3 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .market-overview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .charts-row {
+    grid-template-columns: 1fr;
+  }
+
+  .stock-search {
+    grid-template-columns: 1fr;
+  }
+
+  .stock-search button {
+    grid-column: auto;
+  }
 }
 
 @media (max-width: 520px) {
@@ -1159,6 +1168,10 @@ td {
   .indicator-grid-4,
   .indicator-grid-3,
   .indicator-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .market-overview-grid {
     grid-template-columns: 1fr;
   }
 

@@ -362,7 +362,635 @@ async function refreshDashboard() {
   if (btn) { btn.disabled = false; btn.textContent = "↻ Refresh data"; }
 }
 
-// ── Event listeners ───────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════════════════
+// Market Overview (Feature 1) + Stock Research Panel (Feature 2 + 3)
+// ════════════════════════════════════════════════════════════════════════════
+
+// Cloudflare Worker URL — paste your deployed *.workers.dev URL here to enable
+// fundamentals/news/peers for arbitrary tickers. When left as the placeholder,
+// the dashboard falls back to chart-only data for non-cached tickers.
+// Source: worker/yahoo-proxy.js (see comment header for deploy steps).
+const WORKER_URL = "https://yahoo-proxy.jedbuckert.workers.dev";
+const WORKER_ENABLED = WORKER_URL && !WORKER_URL.startsWith("REPLACE");
+
+async function workerFetch(path, params) {
+  if (!WORKER_ENABLED) throw new Error("Worker URL not configured");
+  const qs = new URLSearchParams(params).toString();
+  const url = `${WORKER_URL}${path}?${qs}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    let detail = "";
+    try { detail = (await res.json()).error || ""; } catch {}
+    throw new Error(`Worker ${path} ${res.status}${detail ? ": " + detail : ""}`);
+  }
+  return res.json();
+}
+
+const COLORS = {
+  accent: "#5db8f5",
+  green:  "#4bd498",
+  red:    "#e06868",
+  muted:  "#8890a4",
+  line:   "#272c3a"
+};
+
+// ── Chart helpers ─────────────────────────────────────────────────────────────
+
+const chartRegistry = {};
+
+function destroyChart(id) {
+  if (chartRegistry[id]) {
+    chartRegistry[id].destroy();
+    delete chartRegistry[id];
+  }
+}
+
+function waitForChart(retries = 60) {
+  return new Promise((resolve, reject) => {
+    const tick = () => {
+      if (typeof Chart !== "undefined") return resolve();
+      if (--retries <= 0) return reject(new Error("Chart.js failed to load"));
+      setTimeout(tick, 100);
+    };
+    tick();
+  });
+}
+
+function makeMiniLineChart(canvasId, dates, values, color) {
+  destroyChart(canvasId);
+  const ctx = document.getElementById(canvasId);
+  if (!ctx || !values?.length) return;
+  chartRegistry[canvasId] = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: dates,
+      datasets: [{
+        data: values,
+        borderColor: color,
+        backgroundColor: color + "22",
+        borderWidth: 1.5,
+        pointRadius: 0,
+        fill: true,
+        tension: 0.15
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      scales: { x: { display: false }, y: { display: false } },
+      interaction: { mode: "nearest", intersect: false },
+      animation: false
+    }
+  });
+}
+
+function makePriceVolumeChart(canvasId, dates, closes, volumes) {
+  destroyChart(canvasId);
+  const ctx = document.getElementById(canvasId);
+  if (!ctx || !closes?.length) return;
+  chartRegistry[canvasId] = new Chart(ctx, {
+    data: {
+      labels: dates,
+      datasets: [
+        {
+          type: "line",
+          label: "Price",
+          data: closes,
+          borderColor: COLORS.accent,
+          backgroundColor: COLORS.accent + "22",
+          borderWidth: 1.8,
+          pointRadius: 0,
+          yAxisID: "y",
+          tension: 0.15,
+          fill: true,
+          order: 1
+        },
+        {
+          type: "bar",
+          label: "Volume",
+          data: volumes,
+          backgroundColor: COLORS.muted + "55",
+          borderWidth: 0,
+          yAxisID: "y1",
+          order: 2
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: { display: true, labels: { color: COLORS.muted, boxWidth: 14 } },
+        tooltip: {
+          callbacks: {
+            label(ctx) {
+              const v = ctx.parsed.y;
+              if (ctx.dataset.label === "Volume") {
+                return `Volume: ${v ? Number(v).toLocaleString() : "--"}`;
+              }
+              return `${ctx.dataset.label}: ${v != null ? Number(v).toFixed(2) : "--"}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x:  { ticks: { color: COLORS.muted, maxTicksLimit: 6 }, grid: { color: COLORS.line } },
+        y:  { position: "left", ticks: { color: COLORS.muted }, grid: { color: COLORS.line } },
+        y1: { position: "right", ticks: { color: COLORS.muted, callback: v => (v >= 1e6 ? (v/1e6).toFixed(0) + "M" : v) }, grid: { drawOnChartArea: false } }
+      },
+      animation: false
+    }
+  });
+}
+
+function makeBarChart(canvasId, labels, datasets) {
+  destroyChart(canvasId);
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return;
+  chartRegistry[canvasId] = new Chart(ctx, {
+    type: "bar",
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: datasets.length > 1, labels: { color: COLORS.muted } },
+        tooltip: { mode: "index", intersect: false }
+      },
+      scales: {
+        x: { ticks: { color: COLORS.muted }, grid: { color: COLORS.line } },
+        y: { ticks: { color: COLORS.muted }, grid: { color: COLORS.line } }
+      },
+      animation: false
+    }
+  });
+}
+
+// ── Market Overview ───────────────────────────────────────────────────────────
+
+const MARKET_OVERVIEW = [
+  { key: "sp500",       cardId: "mo-sp500", chartId: "chart-sp500", symbol: "^GSPC" },
+  { key: "nasdaq100",   cardId: "mo-ndx",   chartId: "chart-ndx",   symbol: "^NDX"  },
+  { key: "dow",         cardId: "mo-dow",   chartId: "chart-dow",   symbol: "^DJI"  },
+  { key: "russell2000", cardId: "mo-rut",   chartId: "chart-rut",   symbol: "^RUT"  },
+  { key: "vix",         cardId: "mo-vix",   chartId: "chart-vix",   symbol: "^VIX"  }
+];
+
+function renderMarketOverviewCard(entry, quote, history) {
+  if (!quote) return;
+  setText(entry.cardId, fmt.number(quote.value, 2));
+  const chg = formatChange(quote.value, quote.prev);
+  setText(`${entry.cardId}-chg`, chg.text);
+  setClass(`${entry.cardId}-chg`, `ic-change ${chg.cls}`);
+  setText(`${entry.cardId}-date`, quote.date ? formatDate(quote.date) : "");
+
+  if (history?.dates?.length && history?.closes?.length) {
+    const trendUp = history.closes[history.closes.length - 1] >= history.closes[0];
+    const color = trendUp ? COLORS.green : COLORS.red;
+    makeMiniLineChart(entry.chartId, history.dates, history.closes, color);
+  }
+}
+
+async function renderMarketOverview(snapshot) {
+  await waitForChart().catch(err => console.warn(err.message));
+  for (const entry of MARKET_OVERVIEW) {
+    const quote   = snapshot?.stocks?.[entry.key];
+    const history = snapshot?.indexHistory?.[entry.symbol];
+    renderMarketOverviewCard(entry, quote, history);
+  }
+}
+
+async function refreshMarketOverviewQuotes() {
+  // Live-refresh just the price/change/date fields (not the chart) every 5 minutes
+  for (const entry of MARKET_OVERVIEW) {
+    try {
+      const quote = await fetchYahooFinance(entry.symbol);
+      setText(entry.cardId, fmt.number(quote.value, 2));
+      const chg = formatChange(quote.value, quote.prev);
+      setText(`${entry.cardId}-chg`, chg.text);
+      setClass(`${entry.cardId}-chg`, `ic-change ${chg.cls}`);
+      if (quote.date) setText(`${entry.cardId}-date`, formatDate(quote.date));
+    } catch (e) {
+      console.warn(`Live refresh ${entry.symbol}:`, e.message);
+    }
+  }
+}
+
+// ── Stock Research Panel ──────────────────────────────────────────────────────
+
+let currentSnapshot = null;
+let currentTicker   = null;
+
+const POPULAR_TICKERS = ["AAPL","MSFT","GOOGL","AMZN","NVDA","TSLA","META","JPM","V","BRK-B"];
+
+const fmtMetric = {
+  pct(v, decimals = 2) {
+    const n = Number(v);
+    if (!Number.isFinite(n)) return null;
+    return (n * 100).toFixed(decimals) + "%";
+  },
+  pctRaw(v, decimals = 2) {
+    const n = Number(v);
+    if (!Number.isFinite(n)) return null;
+    return n.toFixed(decimals) + "%";
+  },
+  number(v, decimals = 2) {
+    const n = Number(v);
+    return Number.isFinite(n) ? n.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) : null;
+  },
+  ratio(v) {
+    const n = Number(v);
+    return Number.isFinite(n) ? n.toFixed(2) + "×" : null;
+  },
+  bigDollar(v) {
+    const n = Number(v);
+    if (!Number.isFinite(n)) return null;
+    const abs = Math.abs(n);
+    if (abs >= 1e12) return (n / 1e12).toFixed(2) + "T";
+    if (abs >= 1e9)  return (n / 1e9).toFixed(2)  + "B";
+    if (abs >= 1e6)  return (n / 1e6).toFixed(2)  + "M";
+    return n.toLocaleString("en-US", { maximumFractionDigits: 0 });
+  },
+  dollar(v, decimals = 2) {
+    const n = Number(v);
+    return Number.isFinite(n) ? "$" + n.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) : null;
+  }
+};
+
+function metricCard(label, value, sub) {
+  const v = value ?? "--";
+  const isEmpty = value == null;
+  const subHtml = sub ? `<span class="metric-card-sub">${sub}</span>` : "";
+  return `<div class="metric-card">
+    <span class="metric-card-label">${label}</span>
+    <span class="metric-card-value${isEmpty ? " empty" : ""}">${v}</span>
+    ${subHtml}
+  </div>`;
+}
+
+function fillGrid(id, html) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = html;
+}
+
+function showStockError(msg) {
+  const err = document.getElementById("stock-error");
+  const panel = document.getElementById("stock-panel");
+  const loading = document.getElementById("stock-loading");
+  if (loading) loading.hidden = true;
+  if (panel) panel.hidden = true;
+  if (err) {
+    err.hidden = false;
+    err.textContent = msg;
+  }
+}
+
+function clearStockError() {
+  const err = document.getElementById("stock-error");
+  if (err) err.hidden = true;
+}
+
+function setStockLoading(on) {
+  const loading = document.getElementById("stock-loading");
+  if (loading) loading.hidden = !on;
+}
+
+function renderStockHeader(ticker, fundamentals, liveQuote) {
+  const profile = fundamentals?.profile || {};
+  const quote   = fundamentals?.quote   || {};
+  const analyst = fundamentals?.analyst || {};
+  const price   = liveQuote?.value ?? quote?.price;
+  const prev    = liveQuote?.prev;
+  const change  = (price != null && prev != null && prev !== 0)
+    ? { abs: price - prev, pct: ((price - prev) / Math.abs(prev)) * 100 }
+    : null;
+  const cls = change && change.abs >= 0 ? "positive" : (change ? "negative" : "neutral");
+  const arrow = change && change.abs >= 0 ? "▲" : (change ? "▼" : "");
+  const sign  = change && change.abs >= 0 ? "+" : "";
+
+  const high52 = liveQuote?.fiftyTwoWeekHigh ?? quote?.fiftyTwoWeekHigh;
+  const low52  = liveQuote?.fiftyTwoWeekLow  ?? quote?.fiftyTwoWeekLow;
+  const recKey = analyst.recommendationKey ? analyst.recommendationKey.replace(/_/g, " ") : null;
+  const target = analyst.targetMean;
+
+  const recBadgeClass = recKey
+    ? (/buy|outperform/i.test(recKey) ? "badge-green" : (/sell|underperform/i.test(recKey) ? "badge-red" : "badge-blue"))
+    : "badge-blue";
+
+  const headerEl = document.getElementById("stock-header");
+  if (!headerEl) return;
+  headerEl.innerHTML = `
+    <div class="stock-header-main">
+      <h3 class="stock-header-name">${profile.longName || profile.shortName || liveQuote?.longName || ticker}</h3>
+      <div class="stock-header-meta">${ticker}${profile.exchange || liveQuote?.exchange ? " · " + (profile.exchange || liveQuote?.exchange) : ""}${profile.sector ? " · " + profile.sector : ""}</div>
+      <div class="stock-header-price">
+        <strong>${price != null ? fmtMetric.dollar(price, 2) : "--"}</strong>
+        ${change ? `<span class="ic-change ${cls}">${arrow} ${sign}${change.abs.toFixed(2)} (${sign}${change.pct.toFixed(2)}%)</span>` : ""}
+      </div>
+    </div>
+    <div class="stock-header-side">
+      <div class="stock-header-row"><span>52-week high</span><strong>${high52 != null ? fmtMetric.dollar(high52, 2) : "--"}</strong></div>
+      <div class="stock-header-row"><span>52-week low</span><strong>${low52 != null ? fmtMetric.dollar(low52, 2) : "--"}</strong></div>
+      <div class="stock-header-row"><span>Analyst rating</span>${recKey ? `<span class="badge ${recBadgeClass}">${recKey.toUpperCase()}</span>` : "<strong>--</strong>"}</div>
+      <div class="stock-header-row"><span>Price target (mean)</span><strong>${target != null ? fmtMetric.dollar(target, 2) : "--"}</strong></div>
+      ${analyst.numberOfAnalysts ? `<div class="stock-header-row"><span>Analyst coverage</span><strong>${analyst.numberOfAnalysts} analysts</strong></div>` : ""}
+    </div>`;
+}
+
+function renderStockMetrics(fundamentals) {
+  const v = fundamentals?.valuation || {};
+  const i = fundamentals?.income    || {};
+  const b = fundamentals?.balance   || {};
+  const c = fundamentals?.cashflow  || {};
+  const r = fundamentals?.returns   || {};
+
+  fillGrid("stock-valuation", [
+    metricCard("P/E (trailing)", fmtMetric.ratio(v.trailingPE)),
+    metricCard("P/E (forward)",  fmtMetric.ratio(v.forwardPE)),
+    metricCard("EV / EBITDA",    fmtMetric.ratio(v.evToEbitda)),
+    metricCard("Price / Sales",  fmtMetric.ratio(v.priceToSales)),
+    metricCard("Price / Book",   fmtMetric.ratio(v.priceToBook)),
+    metricCard("PEG Ratio",      fmtMetric.ratio(v.pegRatio))
+  ].join(""));
+
+  fillGrid("stock-income", [
+    metricCard("Revenue (TTM)",  fmtMetric.bigDollar(i.revenueTTM) ? "$" + fmtMetric.bigDollar(i.revenueTTM) : null),
+    metricCard("Revenue growth (YoY)", fmtMetric.pct(i.revenueGrowthYoY, 2)),
+    metricCard("Gross margin",   fmtMetric.pct(i.grossMargin, 2)),
+    metricCard("EBITDA margin",  fmtMetric.pct(i.ebitdaMargin, 2)),
+    metricCard("Net income (TTM)", i.netIncome != null ? "$" + fmtMetric.bigDollar(i.netIncome) : null),
+    metricCard("EPS (trailing)", fmtMetric.number(i.epsTrailing, 2)),
+    metricCard("EPS (forward)",  fmtMetric.number(i.epsForward, 2))
+  ].join(""));
+
+  fillGrid("stock-balance", [
+    metricCard("Total cash",   b.totalCash != null ? "$" + fmtMetric.bigDollar(b.totalCash) : null),
+    metricCard("Total debt",   b.totalDebt != null ? "$" + fmtMetric.bigDollar(b.totalDebt) : null),
+    metricCard("Net debt",     b.netDebt   != null ? "$" + fmtMetric.bigDollar(b.netDebt)   : null),
+    metricCard("Debt / Equity", fmtMetric.number(b.debtToEquity, 2))
+  ].join(""));
+
+  fillGrid("stock-cashflow", [
+    metricCard("Free cash flow (TTM)",   c.freeCashflow != null ? "$" + fmtMetric.bigDollar(c.freeCashflow) : null),
+    metricCard("Operating cash flow",    c.operatingCashflow != null ? "$" + fmtMetric.bigDollar(c.operatingCashflow) : null),
+    metricCard("Capital expenditure",    c.capex != null ? "$" + fmtMetric.bigDollar(c.capex) : null),
+    metricCard("FCF yield",              fmtMetric.pct(c.fcfYield, 2))
+  ].join(""));
+
+  fillGrid("stock-returns", [
+    metricCard("Return on Equity",      fmtMetric.pct(r.roe, 2)),
+    metricCard("Return on Assets",      fmtMetric.pct(r.roa, 2)),
+    metricCard("Return on Inv. Capital", fmtMetric.pct(r.roic, 2))
+  ].join(""));
+}
+
+async function renderStockCharts(tickerData) {
+  await waitForChart().catch(() => {});
+  const hist = tickerData?.history;
+  if (hist?.dates?.length && hist?.closes?.length) {
+    makePriceVolumeChart("stock-price-chart", hist.dates, hist.closes, hist.volumes || []);
+  } else {
+    destroyChart("stock-price-chart");
+  }
+
+  const q = tickerData?.fundamentals?.quarterly;
+  if (q?.dates?.length) {
+    const labels = q.dates.map(d => d?.slice(0, 7) || "");
+    makeBarChart("stock-revenue-chart", labels, [{
+      label: "Revenue",
+      data: q.revenue,
+      backgroundColor: COLORS.accent + "cc",
+      borderRadius: 4
+    }]);
+  } else {
+    destroyChart("stock-revenue-chart");
+  }
+
+  const eps = tickerData?.fundamentals?.epsTrend;
+  if (eps?.dates?.length) {
+    const labels = eps.dates.map(d => d?.slice(0, 7) || "");
+    makeBarChart("stock-eps-chart", labels, [
+      { label: "Actual",   data: eps.epsActual,   backgroundColor: COLORS.green + "cc", borderRadius: 4 },
+      { label: "Estimate", data: eps.epsEstimate, backgroundColor: COLORS.muted + "aa", borderRadius: 4 }
+    ]);
+  } else {
+    destroyChart("stock-eps-chart");
+  }
+}
+
+function renderStockNews(news) {
+  const el = document.getElementById("stock-news");
+  if (!el) return;
+  if (!news?.length) {
+    el.innerHTML = `<li class="metric-card-sub">No recent headlines available.</li>`;
+    return;
+  }
+  el.innerHTML = news.map(n => {
+    const date = n.publishedAt ? new Date(n.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "";
+    return `<li>
+      <a href="${n.link}" target="_blank" rel="noopener noreferrer">${n.title}</a>
+      <div class="news-meta">${n.publisher || ""}${date ? " · " + date : ""}</div>
+    </li>`;
+  }).join("");
+}
+
+function renderStockPeers(ticker, snapshot) {
+  const peers = snapshot?.peerMap?.[ticker] || [];
+  const tbody = document.querySelector("#stock-peers tbody");
+  if (!tbody) return;
+
+  // Include the loaded ticker as the first row so the user can compare directly
+  const ownRow = snapshot?.tickers?.[ticker] ? {
+    symbol: ticker,
+    longName: snapshot.tickers[ticker].fundamentals?.profile?.longName,
+    trailingPE: snapshot.tickers[ticker].fundamentals?.valuation?.trailingPE,
+    evToEbitda: snapshot.tickers[ticker].fundamentals?.valuation?.evToEbitda,
+    revenueGrowth: snapshot.tickers[ticker].fundamentals?.income?.revenueGrowthYoY,
+    grossMargin: snapshot.tickers[ticker].fundamentals?.income?.grossMargin,
+    roe: snapshot.tickers[ticker].fundamentals?.returns?.roe
+  } : null;
+
+  const rows = [ownRow, ...peers.map(p => snapshot?.peers?.[p])].filter(Boolean);
+
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="7" class="empty">No peer data available.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = rows.map(p => {
+    const isCurrent = p.symbol === ticker;
+    return `<tr${isCurrent ? ' style="background: rgba(93, 184, 245, 0.08)"' : ""}>
+      <td class="ticker-cell">${p.symbol}${isCurrent ? " <span class='muted-inline'>(current)</span>" : ""}</td>
+      <td>${p.longName || "--"}</td>
+      <td${p.trailingPE == null ? ' class="empty"' : ""}>${fmtMetric.ratio(p.trailingPE) || "--"}</td>
+      <td${p.evToEbitda == null ? ' class="empty"' : ""}>${fmtMetric.ratio(p.evToEbitda) || "--"}</td>
+      <td${p.revenueGrowth == null ? ' class="empty"' : ""}>${fmtMetric.pct(p.revenueGrowth, 1) || "--"}</td>
+      <td${p.grossMargin == null ? ' class="empty"' : ""}>${fmtMetric.pct(p.grossMargin, 1) || "--"}</td>
+      <td${p.roe == null ? ' class="empty"' : ""}>${fmtMetric.pct(p.roe, 1) || "--"}</td>
+    </tr>`;
+  }).join("");
+}
+
+async function loadTicker(ticker, snapshot) {
+  ticker = (ticker || "").toUpperCase().trim();
+  if (!ticker) return;
+  clearStockError();
+  setStockLoading(true);
+  currentTicker = ticker;
+
+  // Try snapshot first (populated for popular tickers)
+  let tickerData = snapshot?.tickers?.[ticker] || null;
+  let workerPeers = null; // { peers: [...], peerSummaries: [...] }
+
+  // Always try a live quote
+  let liveQuote = null;
+  try {
+    liveQuote = await fetchYahooFinance(ticker);
+  } catch (e) {
+    console.warn(`Live quote failed for ${ticker}:`, e.message);
+  }
+
+  // For non-cached tickers, ask the Worker for fundamentals/news/peers in
+  // parallel. If the Worker isn't configured, these calls throw and we fall
+  // back to the chart-only path below.
+  if (!tickerData?.fundamentals && WORKER_ENABLED) {
+    const [fundRes, newsRes, peersRes] = await Promise.allSettled([
+      workerFetch("/fundamentals", { symbol: ticker }),
+      workerFetch("/news",         { symbol: ticker }),
+      workerFetch("/peers",        { symbol: ticker })
+    ]);
+    tickerData = tickerData || { symbol: ticker };
+    if (fundRes.status === "fulfilled") tickerData.fundamentals = fundRes.value;
+    else                                console.warn(`Worker fundamentals ${ticker}:`, fundRes.reason?.message);
+    if (newsRes.status === "fulfilled") tickerData.news = newsRes.value;
+    else                                console.warn(`Worker news ${ticker}:`, newsRes.reason?.message);
+    if (peersRes.status === "fulfilled") workerPeers = peersRes.value;
+    else                                 console.warn(`Worker peers ${ticker}:`, peersRes.reason?.message);
+  }
+
+  // Live history (chart endpoint allows browser CORS — works for any ticker)
+  if (!tickerData?.history) {
+    try {
+      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1y`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const json = await res.json();
+        const result = json.chart?.result?.[0];
+        if (result) {
+          const ts = result.timestamp || [];
+          const closes = result.indicators?.quote?.[0]?.close || [];
+          const volumes = result.indicators?.quote?.[0]?.volume || [];
+          const dates = [], c = [], v = [];
+          for (let i = 0; i < ts.length; i++) {
+            if (closes[i] != null) {
+              dates.push(new Date(ts[i] * 1000).toISOString().slice(0, 10));
+              c.push(closes[i]);
+              v.push(volumes[i] != null ? volumes[i] : null);
+            }
+          }
+          tickerData = { ...(tickerData || {}), symbol: ticker, history: { dates, closes: c, volumes: v } };
+        }
+      }
+    } catch (e) {
+      console.warn(`Live history failed for ${ticker}:`, e.message);
+    }
+  }
+
+  // Hard error: nothing usable
+  if (!liveQuote && !tickerData?.history && !tickerData?.fundamentals) {
+    setStockLoading(false);
+    showStockError(`Could not find data for "${ticker}". Yahoo Finance returned no usable data — check the ticker spelling and try again.`);
+    destroyChart("stock-price-chart");
+    destroyChart("stock-revenue-chart");
+    destroyChart("stock-eps-chart");
+    return;
+  }
+
+  // Show panel
+  const panel = document.getElementById("stock-panel");
+  if (panel) panel.hidden = false;
+  setStockLoading(false);
+
+  // Header (uses fundamentals if cached, falls back to liveQuote)
+  renderStockHeader(ticker, tickerData?.fundamentals, liveQuote);
+
+  // Metric grids — only meaningful if we have cached fundamentals
+  if (tickerData?.fundamentals) {
+    renderStockMetrics(tickerData.fundamentals);
+  } else {
+    const reason = WORKER_ENABLED
+      ? "Fundamentals could not be fetched for this ticker."
+      : "Fundamentals are cached daily for the popular-tickers list. Deploy the Cloudflare Worker (worker/yahoo-proxy.js) to enable any ticker.";
+    const placeholder = `<div class="metric-card"><span class="metric-card-label">Unavailable</span><span class="metric-card-value empty">--</span><span class="metric-card-sub">${reason}</span></div>`;
+    fillGrid("stock-valuation", placeholder);
+    fillGrid("stock-income",    placeholder);
+    fillGrid("stock-balance",   placeholder);
+    fillGrid("stock-cashflow",  placeholder);
+    fillGrid("stock-returns",   placeholder);
+  }
+
+  // Charts
+  await renderStockCharts(tickerData);
+
+  // News
+  renderStockNews(tickerData?.news);
+
+  // Peers — three sources, in priority order:
+  //   1. snapshot.peerMap (curated list for cached popular tickers)
+  //   2. Worker /peers response (for arbitrary tickers, Yahoo's recommendations)
+  //   3. Empty fallback message
+  if (snapshot?.peerMap?.[ticker]) {
+    renderStockPeers(ticker, snapshot);
+  } else if (workerPeers?.peerSummaries?.length) {
+    renderStockPeersFromWorker(ticker, tickerData?.fundamentals, workerPeers.peerSummaries);
+  } else {
+    const tbody = document.querySelector("#stock-peers tbody");
+    if (tbody) {
+      const msg = WORKER_ENABLED
+        ? "No peer recommendations returned for this ticker."
+        : "Peer data is curated for the popular-tickers list. Deploy the Cloudflare Worker to enable any ticker.";
+      tbody.innerHTML = `<tr><td colspan="7" class="empty">${msg}</td></tr>`;
+    }
+  }
+}
+
+function renderStockPeersFromWorker(ticker, fundamentals, peerSummaries) {
+  const tbody = document.querySelector("#stock-peers tbody");
+  if (!tbody) return;
+
+  const ownRow = fundamentals ? {
+    symbol: ticker,
+    longName:      fundamentals.profile?.longName,
+    trailingPE:    fundamentals.valuation?.trailingPE,
+    evToEbitda:    fundamentals.valuation?.evToEbitda,
+    revenueGrowth: fundamentals.income?.revenueGrowthYoY,
+    grossMargin:   fundamentals.income?.grossMargin,
+    roe:           fundamentals.returns?.roe
+  } : null;
+
+  const rows = [ownRow, ...peerSummaries].filter(Boolean);
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="7" class="empty">No peer data available.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = rows.map(p => {
+    const isCurrent = p.symbol === ticker;
+    return `<tr${isCurrent ? ' style="background: rgba(93, 184, 245, 0.08)"' : ""}>
+      <td class="ticker-cell">${p.symbol}${isCurrent ? " <span class='muted-inline'>(current)</span>" : ""}</td>
+      <td>${p.longName || "--"}</td>
+      <td${p.trailingPE == null ? ' class="empty"' : ""}>${fmtMetric.ratio(p.trailingPE) || "--"}</td>
+      <td${p.evToEbitda == null ? ' class="empty"' : ""}>${fmtMetric.ratio(p.evToEbitda) || "--"}</td>
+      <td${p.revenueGrowth == null ? ' class="empty"' : ""}>${fmtMetric.pct(p.revenueGrowth, 1) || "--"}</td>
+      <td${p.grossMargin == null ? ' class="empty"' : ""}>${fmtMetric.pct(p.grossMargin, 1) || "--"}</td>
+      <td${p.roe == null ? ' class="empty"' : ""}>${fmtMetric.pct(p.roe, 1) || "--"}</td>
+    </tr>`;
+  }).join("");
+}
+
+// ── Wiring ────────────────────────────────────────────────────────────────────
 
 document.getElementById("refresh-data")?.addEventListener("click", refreshDashboard);
 document.getElementById("dismiss-warning")?.addEventListener("click", () => {
@@ -370,413 +998,55 @@ document.getElementById("dismiss-warning")?.addEventListener("click", () => {
   if (el) el.hidden = true;
 });
 
-// Auto-load on page open
-refreshDashboard();
-
-// ── Company Lookup ────────────────────────────────────────────────────────────
-
-const LOOKUP_PROXIES = [
-  url => `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
-  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-  url => url
-];
-
-async function fetchWithProxy(url) {
-  let lastErr;
-  for (const wrap of LOOKUP_PROXIES) {
-    try {
-      const res = await fetch(wrap(url), { headers: { Accept: "application/json" } });
-      if (!res.ok) { lastErr = new Error(`HTTP ${res.status}`); continue; }
-      return await res.json();
-    } catch (err) {
-      lastErr = err;
-    }
-  }
-  throw lastErr ?? new Error("All proxies failed");
-}
-
-function rawOrNull(v) {
-  if (v == null) return null;
-  if (typeof v === "object") return v.raw ?? null;
-  return Number.isFinite(v) ? v : null;
-}
-
-const lkFmt = {
-  bigCurrency(n) {
-    if (!Number.isFinite(n)) return "--";
-    const abs = Math.abs(n);
-    if (abs >= 1e12) return "$" + (n / 1e12).toFixed(2) + "T";
-    if (abs >= 1e9)  return "$" + (n / 1e9).toFixed(2) + "B";
-    if (abs >= 1e6)  return "$" + (n / 1e6).toFixed(2) + "M";
-    if (abs >= 1e3)  return "$" + (n / 1e3).toFixed(2) + "K";
-    return "$" + n.toFixed(2);
-  },
-  bigNumber(n) {
-    if (!Number.isFinite(n)) return "--";
-    const abs = Math.abs(n);
-    if (abs >= 1e9) return (n / 1e9).toFixed(2) + "B";
-    if (abs >= 1e6) return (n / 1e6).toFixed(2) + "M";
-    if (abs >= 1e3) return (n / 1e3).toFixed(2) + "K";
-    return n.toLocaleString("en-US");
-  },
-  ratio(n, decimals = 2) {
-    return Number.isFinite(n) ? n.toFixed(decimals) + "×" : "--";
-  },
-  multiple(n, decimals = 2) {
-    return Number.isFinite(n) ? n.toFixed(decimals) : "--";
-  },
-  pct(n, decimals = 2) {
-    if (!Number.isFinite(n)) return "--";
-    return (n * 100).toFixed(decimals) + "%";
-  },
-  pctDirect(n, decimals = 2) {
-    return Number.isFinite(n) ? n.toFixed(decimals) + "%" : "--";
-  },
-  price(n) {
-    return Number.isFinite(n)
-      ? "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-      : "--";
-  },
-  range(lo, hi) {
-    if (!Number.isFinite(lo) || !Number.isFinite(hi)) return "--";
-    return `${lkFmt.price(lo)} – ${lkFmt.price(hi)}`;
-  }
-};
-
-function setLk(id, value) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = value;
-}
-
-function showLookupStatus(msg, isError = false) {
-  const el = document.getElementById("lookup-status");
-  if (!el) return;
-  el.textContent = msg;
-  el.className = "lookup-status" + (isError ? " error" : "");
-  el.hidden = false;
-}
-
-function hideLookupStatus() {
-  const el = document.getElementById("lookup-status");
-  if (el) el.hidden = true;
-}
-
-function showLookupResult() {
-  const el = document.getElementById("lookup-result");
-  if (el) el.hidden = false;
-}
-
-async function fetchYahooSearch(query) {
-  const url = `https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=8&newsCount=0`;
-  return await fetchWithProxy(url);
-}
-
-async function fetchYahooChart(symbol, range = "1y", interval = "1d") {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=${range}&interval=${interval}`;
-  // chart endpoint usually works direct; only fall back to proxy if it fails
-  try {
-    const res = await fetch(url, { headers: { Accept: "application/json" } });
-    if (res.ok) return await res.json();
-  } catch (_) { /* fall through */ }
-  return await fetchWithProxy(url);
-}
-
-async function fetchYahooSummary(symbol) {
-  const modules = [
-    "summaryDetail",
-    "defaultKeyStatistics",
-    "financialData",
-    "price",
-    "assetProfile",
-    "summaryProfile"
-  ].join(",");
-  const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(symbol)}?modules=${modules}`;
-  return await fetchWithProxy(url);
-}
-
-function buildSparkPaths(closes) {
-  const valid = closes.map((v, i) => ({ v, i })).filter(p => Number.isFinite(p.v));
-  if (valid.length < 2) return { line: "", fill: "" };
-  const w = 600, h = 120;
-  const min = Math.min(...valid.map(p => p.v));
-  const max = Math.max(...valid.map(p => p.v));
-  const range = (max - min) || 1;
-  const stepX = w / (valid.length - 1);
-  const pad = 6;
-  const usableH = h - pad * 2;
-  const points = valid.map((p, i) => {
-    const x = i * stepX;
-    const y = pad + usableH - ((p.v - min) / range) * usableH;
-    return [x, y];
-  });
-  const line = points.map(([x, y], i) => (i === 0 ? `M${x.toFixed(1)} ${y.toFixed(1)}` : `L${x.toFixed(1)} ${y.toFixed(1)}`)).join(" ");
-  const first = points[0], last = points[points.length - 1];
-  const fill = `${line} L${last[0].toFixed(1)} ${h} L${first[0].toFixed(1)} ${h} Z`;
-  return { line, fill };
-}
-
-function renderQuote(symbol, chartJson) {
-  const result = chartJson?.chart?.result?.[0];
-  if (!result) throw new Error(`No chart data for ${symbol}`);
-  const meta = result.meta || {};
-  const closes = result.indicators?.quote?.[0]?.close ?? [];
-
-  const price = meta.regularMarketPrice;
-  const prev  = meta.chartPreviousClose ?? meta.previousClose;
-  const change = (Number.isFinite(price) && Number.isFinite(prev)) ? price - prev : null;
-  const changePct = (change != null && prev) ? (change / prev) * 100 : null;
-
-  setLk("lk-symbol", (meta.symbol || symbol).toUpperCase());
-  setLk("lk-exch", meta.exchangeName ? `· ${meta.exchangeName}` : "");
-  setLk("lk-price", lkFmt.price(price));
-  setLk("lk-prev-close", lkFmt.price(prev));
-  setLk("lk-currency", meta.currency || "--");
-  setLk("lk-day-range", lkFmt.range(meta.regularMarketDayLow, meta.regularMarketDayHigh));
-  setLk("lk-52w-range", lkFmt.range(meta.fiftyTwoWeekLow, meta.fiftyTwoWeekHigh));
-  setLk("lk-volume", lkFmt.bigNumber(meta.regularMarketVolume));
-
-  const chgEl = document.getElementById("lk-change");
-  if (chgEl) {
-    if (change == null) {
-      chgEl.textContent = "--";
-      chgEl.className = "lookup-change neutral";
-    } else {
-      const sign = change >= 0 ? "+" : "";
-      chgEl.textContent = `${sign}${change.toFixed(2)} (${sign}${changePct.toFixed(2)}%)`;
-      chgEl.className = "lookup-change " + (change >= 0 ? "positive" : "negative");
-    }
-  }
-
-  if (Number.isFinite(meta.regularMarketTime)) {
-    const d = new Date(meta.regularMarketTime * 1000);
-    setLk("lk-asof", "As of " + d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" }));
-  } else {
-    setLk("lk-asof", "");
-  }
-
-  const { line, fill } = buildSparkPaths(closes);
-  const lineEl = document.getElementById("lk-spark-line");
-  const fillEl = document.getElementById("lk-spark-fill");
-  if (lineEl) lineEl.setAttribute("d", line);
-  if (fillEl) fillEl.setAttribute("d", fill);
-}
-
-function renderFundamentals(summaryJson) {
-  const r = summaryJson?.quoteSummary?.result?.[0];
-  if (!r) return false;
-  const sd = r.summaryDetail || {};
-  const ks = r.defaultKeyStatistics || {};
-  const fd = r.financialData || {};
-  const pr = r.price || {};
-  const ap = r.assetProfile || r.summaryProfile || {};
-
-  // Header
-  if (pr.longName || pr.shortName) setLk("lk-name", pr.longName || pr.shortName);
-  if (ap.sector)   setLk("lk-sector",   ap.sector);
-  if (ap.industry) setLk("lk-industry", ap.industry);
-
-  // Quote extras
-  setLk("lk-avg-volume", lkFmt.bigNumber(rawOrNull(sd.averageVolume) ?? rawOrNull(sd.averageDailyVolume10Day)));
-
-  // Valuation
-  setLk("lk-mktcap",    lkFmt.bigCurrency(rawOrNull(sd.marketCap) ?? rawOrNull(pr.marketCap)));
-  setLk("lk-ev",        lkFmt.bigCurrency(rawOrNull(ks.enterpriseValue)));
-  setLk("lk-pe",        lkFmt.multiple(rawOrNull(sd.trailingPE)));
-  setLk("lk-fpe",       lkFmt.multiple(rawOrNull(sd.forwardPE) ?? rawOrNull(ks.forwardPE)));
-  setLk("lk-ps",        lkFmt.multiple(rawOrNull(sd.priceToSalesTrailing12Months)));
-  setLk("lk-ev-ebitda", lkFmt.multiple(rawOrNull(ks.enterpriseToEbitda)));
-  setLk("lk-ev-rev",    lkFmt.multiple(rawOrNull(ks.enterpriseToRevenue)));
-  setLk("lk-peg",       lkFmt.multiple(rawOrNull(ks.pegRatio)));
-
-  // Profitability & growth
-  setLk("lk-rev",           lkFmt.bigCurrency(rawOrNull(fd.totalRevenue)));
-  setLk("lk-rev-growth",    lkFmt.pct(rawOrNull(fd.revenueGrowth)));
-  setLk("lk-gross-margin",  lkFmt.pct(rawOrNull(fd.grossMargins)));
-  setLk("lk-op-margin",     lkFmt.pct(rawOrNull(fd.operatingMargins)));
-  setLk("lk-profit-margin", lkFmt.pct(rawOrNull(fd.profitMargins) ?? rawOrNull(ks.profitMargins)));
-  setLk("lk-eps",           lkFmt.price(rawOrNull(ks.trailingEps)));
-  setLk("lk-roe",           lkFmt.pct(rawOrNull(fd.returnOnEquity)));
-  setLk("lk-roa",           lkFmt.pct(rawOrNull(fd.returnOnAssets)));
-
-  // Balance sheet
-  const cash = rawOrNull(fd.totalCash);
-  const debt = rawOrNull(fd.totalDebt);
-  setLk("lk-cash",      lkFmt.bigCurrency(cash));
-  setLk("lk-debt",      lkFmt.bigCurrency(debt));
-  setLk("lk-net-debt",  lkFmt.bigCurrency(Number.isFinite(cash) && Number.isFinite(debt) ? (debt - cash) : null));
-  const de = rawOrNull(fd.debtToEquity);
-  setLk("lk-de",        Number.isFinite(de) ? (de / 100).toFixed(2) : "--");
-  setLk("lk-current",   lkFmt.multiple(rawOrNull(fd.currentRatio)));
-  setLk("lk-fcf",       lkFmt.bigCurrency(rawOrNull(fd.freeCashflow)));
-  setLk("lk-div-yield", lkFmt.pct(rawOrNull(sd.dividendYield)));
-  setLk("lk-beta",      lkFmt.multiple(rawOrNull(sd.beta) ?? rawOrNull(ks.beta)));
-
-  return true;
-}
-
-function clearFundamentals(name = "--") {
-  setLk("lk-name", name);
-  setLk("lk-sector", "—");
-  setLk("lk-industry", "—");
-  ["lk-avg-volume","lk-mktcap","lk-ev","lk-pe","lk-fpe","lk-ps","lk-ev-ebitda","lk-ev-rev","lk-peg",
-   "lk-rev","lk-rev-growth","lk-gross-margin","lk-op-margin","lk-profit-margin","lk-eps","lk-roe","lk-roa",
-   "lk-cash","lk-debt","lk-net-debt","lk-de","lk-current","lk-fcf","lk-div-yield","lk-beta"
-  ].forEach(id => setLk(id, "--"));
-}
-
-async function lookupTicker(rawSymbol) {
-  const symbol = String(rawSymbol || "").trim().toUpperCase();
-  if (!symbol) return;
-  hideSuggestions();
-  showLookupStatus(`Loading ${symbol}…`);
-
-  // 1) Chart (price + sparkline) – usually works direct
-  let chartJson;
-  try {
-    chartJson = await fetchYahooChart(symbol, "1y", "1d");
-  } catch (err) {
-    showLookupStatus(`Could not load price data for "${symbol}". ${err.message}`, true);
-    return;
-  }
-  if (chartJson?.chart?.error || !chartJson?.chart?.result?.[0]) {
-    showLookupStatus(`No price data for "${symbol}". Try a different ticker.`, true);
-    return;
-  }
-
-  clearFundamentals();
-  try {
-    renderQuote(symbol, chartJson);
-  } catch (err) {
-    showLookupStatus(`Could not parse price data: ${err.message}`, true);
-    return;
-  }
-  showLookupResult();
-  showLookupStatus("Loading fundamentals…");
-
-  // 2) Fundamentals via CORS proxy
-  try {
-    const summary = await fetchYahooSummary(symbol);
-    if (summary?.quoteSummary?.error) {
-      throw new Error(summary.quoteSummary.error.description || "Yahoo error");
-    }
-    const ok = renderFundamentals(summary);
-    if (!ok) throw new Error("No fundamentals returned");
-    hideLookupStatus();
-  } catch (err) {
-    console.warn("Fundamentals failed:", err);
-    setLk("lk-name", chartJson.chart.result[0].meta?.symbol || symbol);
-    showLookupStatus(`Showing price only — fundamentals unavailable (${err.message}). Public CORS proxies can rate-limit; try again in a moment.`, true);
-  }
-
-  const url = new URL(window.location.href);
-  url.hash = "lookup=" + symbol;
-  history.replaceState(null, "", url);
-}
-
-// ── Autocomplete ──────────────────────────────────────────────────────────────
-
-let suggestionState = { items: [], active: -1, controller: null };
-
-function hideSuggestions() {
-  const el = document.getElementById("ticker-suggestions");
-  if (el) { el.hidden = true; el.innerHTML = ""; }
-  suggestionState = { items: [], active: -1, controller: null };
-}
-
-function renderSuggestions(items) {
-  const el = document.getElementById("ticker-suggestions");
-  if (!el) return;
-  if (!items.length) { hideSuggestions(); return; }
-  suggestionState.items = items;
-  suggestionState.active = -1;
-  el.innerHTML = items.map((q, i) => `
-    <li role="option" data-index="${i}" data-symbol="${q.symbol}">
-      <span class="sg-symbol">${q.symbol}</span>
-      <span class="sg-name">${q.shortname || q.longname || ""}</span>
-      <span class="sg-exch">${q.exchDisp || q.exchange || ""}</span>
-    </li>`).join("");
-  el.hidden = false;
-}
-
-function highlightSuggestion(idx) {
-  const el = document.getElementById("ticker-suggestions");
-  if (!el) return;
-  const lis = el.querySelectorAll("li");
-  lis.forEach((li, i) => li.classList.toggle("active", i === idx));
-  suggestionState.active = idx;
-}
-
-let searchTimer = null;
-function scheduleSearch(query) {
-  clearTimeout(searchTimer);
-  if (!query || query.length < 1) { hideSuggestions(); return; }
-  searchTimer = setTimeout(async () => {
-    try {
-      const json = await fetchYahooSearch(query);
-      const quotes = (json?.quotes || []).filter(q => q.symbol && (q.quoteType === "EQUITY" || q.quoteType === "ETF" || q.quoteType === "INDEX"));
-      renderSuggestions(quotes.slice(0, 8));
-    } catch (err) {
-      console.warn("Search failed:", err);
-      hideSuggestions();
-    }
-  }, 220);
-}
-
-// ── Wire up events ────────────────────────────────────────────────────────────
-
-const tickerInput = document.getElementById("ticker-input");
-const tickerGo    = document.getElementById("ticker-go");
-const suggestEl   = document.getElementById("ticker-suggestions");
-
-tickerInput?.addEventListener("input", e => scheduleSearch(e.target.value));
-tickerInput?.addEventListener("keydown", e => {
-  const items = suggestionState.items;
-  if (e.key === "ArrowDown" && items.length) {
-    e.preventDefault();
-    highlightSuggestion((suggestionState.active + 1) % items.length);
-  } else if (e.key === "ArrowUp" && items.length) {
-    e.preventDefault();
-    highlightSuggestion((suggestionState.active - 1 + items.length) % items.length);
-  } else if (e.key === "Enter") {
-    e.preventDefault();
-    const chosen = items[suggestionState.active];
-    if (chosen) lookupTicker(chosen.symbol);
-    else if (tickerInput.value.trim()) lookupTicker(tickerInput.value);
-  } else if (e.key === "Escape") {
-    hideSuggestions();
+document.getElementById("ticker-select")?.addEventListener("change", (e) => {
+  const v = e.target.value;
+  if (v) {
+    document.getElementById("ticker-input").value = v;
+    loadTicker(v, currentSnapshot);
   }
 });
 
-tickerInput?.addEventListener("blur", () => { setTimeout(hideSuggestions, 150); });
-
-suggestEl?.addEventListener("mousedown", e => {
-  const li = e.target.closest("li[data-symbol]");
-  if (!li) return;
+document.getElementById("stock-search-form")?.addEventListener("submit", (e) => {
   e.preventDefault();
-  const sym = li.getAttribute("data-symbol");
-  if (tickerInput) tickerInput.value = sym;
-  lookupTicker(sym);
+  const v = (document.getElementById("ticker-input")?.value || "").trim().toUpperCase();
+  if (v) loadTicker(v, currentSnapshot);
 });
 
-tickerGo?.addEventListener("click", () => {
-  const v = tickerInput?.value?.trim();
-  if (v) lookupTicker(v);
-});
-
-document.querySelectorAll(".lookup-chip").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const sym = btn.getAttribute("data-symbol");
-    if (!sym) return;
-    if (tickerInput) tickerInput.value = sym;
-    lookupTicker(sym);
-  });
-});
-
-// Deep-link support (#lookup=AAPL)
-{
-  const m = /lookup=([A-Za-z0-9.\-^]+)/.exec(window.location.hash || "");
-  if (m && tickerInput) {
-    tickerInput.value = m[1].toUpperCase();
-    lookupTicker(m[1]);
+// 5-minute auto-refresh interval (Feature: live-refresh)
+const FIVE_MIN_MS = 5 * 60 * 1000;
+setInterval(async () => {
+  console.log("Auto-refresh tick");
+  await refreshMarketOverviewQuotes();
+  if (currentTicker) {
+    // Re-render the header with a fresh live quote
+    try {
+      const liveQuote = await fetchYahooFinance(currentTicker);
+      const tickerData = currentSnapshot?.tickers?.[currentTicker];
+      renderStockHeader(currentTicker, tickerData?.fundamentals, liveQuote);
+    } catch (e) {
+      console.warn(`Auto-refresh ${currentTicker}:`, e.message);
+    }
   }
-}
+  updateTimestamp("auto-refresh");
+}, FIVE_MIN_MS);
+
+// Auto-load on page open
+(async function init() {
+  await refreshDashboard();
+
+  // Load the snapshot once for the new sections (refreshDashboard already loaded it but didn't return it)
+  currentSnapshot = await tryLoadSnapshot();
+
+  await renderMarketOverview(currentSnapshot);
+
+  // Default ticker = first popular
+  const select = document.getElementById("ticker-select");
+  if (select) {
+    select.value = "AAPL";
+    document.getElementById("ticker-input").value = "AAPL";
+    await loadTicker("AAPL", currentSnapshot);
+  }
+
+  // Refresh Market Overview live quotes once at start
+  refreshMarketOverviewQuotes().catch(() => {});
+})();

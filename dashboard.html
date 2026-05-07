@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.js"></script>
   </head>
   <body>
     <header class="site-header">
@@ -41,123 +42,189 @@
         </div>
       </section>
 
-      <!-- ── Company Lookup ── -->
-      <section class="dash-section" id="section-lookup">
+      <!-- ── Market Overview (Feature 1) ── -->
+      <section class="dash-section" id="section-market-overview">
         <div class="section-heading">
-          <p class="eyebrow">Company Lookup</p>
-          <h2>Investment-banker view</h2>
-          <p class="muted">Search any U.S.-listed ticker for a quote, valuation, profitability, growth, balance-sheet snapshot, and 1-year sparkline. Data: Yahoo Finance (delayed) via public endpoints.</p>
+          <p class="eyebrow">Market Overview</p>
+          <h2>Major U.S. indices · 1-year trend</h2>
+        </div>
+        <div class="market-overview-grid" aria-live="polite">
+          <article class="market-card" data-symbol="^GSPC">
+            <div class="ic-header">
+              <span class="metric-label">S&amp;P 500 <span class="muted-inline">(^GSPC)</span></span>
+              <span class="ic-source">Yahoo Finance · delayed</span>
+            </div>
+            <strong class="ic-value" id="mo-sp500">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="mo-sp500-chg">--</span>
+              <span class="ic-date" id="mo-sp500-date"></span>
+            </div>
+            <div class="market-chart-wrap"><canvas class="market-chart" id="chart-sp500"></canvas></div>
+          </article>
+          <article class="market-card" data-symbol="^NDX">
+            <div class="ic-header">
+              <span class="metric-label">NASDAQ-100 <span class="muted-inline">(^NDX)</span></span>
+              <span class="ic-source">Yahoo Finance · delayed</span>
+            </div>
+            <strong class="ic-value" id="mo-ndx">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="mo-ndx-chg">--</span>
+              <span class="ic-date" id="mo-ndx-date"></span>
+            </div>
+            <div class="market-chart-wrap"><canvas class="market-chart" id="chart-ndx"></canvas></div>
+          </article>
+          <article class="market-card" data-symbol="^DJI">
+            <div class="ic-header">
+              <span class="metric-label">Dow Jones <span class="muted-inline">(^DJI)</span></span>
+              <span class="ic-source">Yahoo Finance · delayed</span>
+            </div>
+            <strong class="ic-value" id="mo-dow">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="mo-dow-chg">--</span>
+              <span class="ic-date" id="mo-dow-date"></span>
+            </div>
+            <div class="market-chart-wrap"><canvas class="market-chart" id="chart-dow"></canvas></div>
+          </article>
+          <article class="market-card" data-symbol="^RUT">
+            <div class="ic-header">
+              <span class="metric-label">Russell 2000 <span class="muted-inline">(^RUT)</span></span>
+              <span class="ic-source">Yahoo Finance · delayed</span>
+            </div>
+            <strong class="ic-value" id="mo-rut">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="mo-rut-chg">--</span>
+              <span class="ic-date" id="mo-rut-date"></span>
+            </div>
+            <div class="market-chart-wrap"><canvas class="market-chart" id="chart-rut"></canvas></div>
+          </article>
+          <article class="market-card" data-symbol="^VIX">
+            <div class="ic-header">
+              <span class="metric-label">VIX <span class="muted-inline">(^VIX)</span></span>
+              <span class="ic-source">Yahoo Finance · delayed</span>
+            </div>
+            <strong class="ic-value" id="mo-vix">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="mo-vix-chg">--</span>
+              <span class="ic-date" id="mo-vix-date"></span>
+            </div>
+            <div class="market-chart-wrap"><canvas class="market-chart" id="chart-vix"></canvas></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ── Stock Research Panel (Feature 2 + 3) ── -->
+      <section class="dash-section" id="section-stock-research">
+        <div class="section-heading">
+          <p class="eyebrow">Stock Research</p>
+          <h2>Pick a ticker · fundamentals, charts, news &amp; peers</h2>
         </div>
 
-        <div class="lookup-bar">
-          <div class="lookup-input-wrap">
+        <form class="stock-search" id="stock-search-form" autocomplete="off">
+          <label class="stock-search-label" for="ticker-input">
+            <span>Search ticker</span>
             <input
-              id="ticker-input"
               type="text"
-              autocomplete="off"
+              id="ticker-input"
+              name="ticker"
+              placeholder="e.g. AAPL"
               spellcheck="false"
-              placeholder="Search a ticker or company (e.g. AAPL, NVDA, Microsoft)"
-              aria-label="Ticker search"
-              maxlength="40">
-            <ul id="ticker-suggestions" class="lookup-suggestions" hidden role="listbox"></ul>
+              autocapitalize="characters"
+              maxlength="8">
+          </label>
+          <label class="stock-search-label" for="ticker-select">
+            <span>Or pick a popular stock</span>
+            <select id="ticker-select" name="popular">
+              <option value="AAPL">AAPL · Apple</option>
+              <option value="MSFT">MSFT · Microsoft</option>
+              <option value="GOOGL">GOOGL · Alphabet</option>
+              <option value="AMZN">AMZN · Amazon</option>
+              <option value="NVDA">NVDA · NVIDIA</option>
+              <option value="TSLA">TSLA · Tesla</option>
+              <option value="META">META · Meta Platforms</option>
+              <option value="JPM">JPM · JPMorgan Chase</option>
+              <option value="V">V · Visa</option>
+              <option value="BRK-B">BRK-B · Berkshire Hathaway</option>
+            </select>
+          </label>
+          <button type="submit" class="button primary" id="ticker-load">Load</button>
+        </form>
+
+        <!-- Error state -->
+        <div class="stock-error" id="stock-error" hidden></div>
+
+        <!-- Loading state -->
+        <div class="stock-loading" id="stock-loading" hidden>Loading ticker data…</div>
+
+        <!-- Panel body — populated by JS once a ticker is selected -->
+        <div class="stock-panel" id="stock-panel" hidden>
+          <!-- Header -->
+          <div class="stock-header" id="stock-header"></div>
+
+          <!-- Metric grids -->
+          <div class="metric-block">
+            <h3>Valuation</h3>
+            <div class="metric-grid" id="stock-valuation"></div>
           </div>
-          <button class="button primary" id="ticker-go" type="button">Lookup</button>
+          <div class="metric-block">
+            <h3>Income statement</h3>
+            <div class="metric-grid" id="stock-income"></div>
+          </div>
+          <div class="metric-block">
+            <h3>Balance sheet</h3>
+            <div class="metric-grid" id="stock-balance"></div>
+          </div>
+          <div class="metric-block">
+            <h3>Cash flow</h3>
+            <div class="metric-grid" id="stock-cashflow"></div>
+          </div>
+          <div class="metric-block">
+            <h3>Returns</h3>
+            <div class="metric-grid" id="stock-returns"></div>
+          </div>
+
+          <!-- Charts -->
+          <div class="metric-block">
+            <h3>Price &amp; volume · 1-year</h3>
+            <div class="stock-chart-wrap"><canvas id="stock-price-chart"></canvas></div>
+          </div>
+          <div class="charts-row">
+            <div class="metric-block">
+              <h3>Revenue · last 4 quarters</h3>
+              <div class="stock-chart-wrap small"><canvas id="stock-revenue-chart"></canvas></div>
+            </div>
+            <div class="metric-block">
+              <h3>EPS actual vs estimate · last 4 quarters</h3>
+              <div class="stock-chart-wrap small"><canvas id="stock-eps-chart"></canvas></div>
+            </div>
+          </div>
+
+          <!-- Catalysts & Risk (news) -->
+          <div class="metric-block">
+            <h3>Catalysts &amp; risk · recent headlines</h3>
+            <ul class="news-list" id="stock-news"></ul>
+          </div>
+
+          <!-- Comparable Companies (Feature 3) -->
+          <div class="metric-block">
+            <h3>Comparable companies</h3>
+            <div class="table-wrap">
+              <table class="peer-table" id="stock-peers">
+                <thead>
+                  <tr>
+                    <th>Ticker</th>
+                    <th>Company</th>
+                    <th>P/E</th>
+                    <th>EV/EBITDA</th>
+                    <th>Rev. growth (YoY)</th>
+                    <th>Gross margin</th>
+                    <th>ROE</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
         </div>
-
-        <p class="lookup-examples">
-          Try:
-          <button type="button" class="lookup-chip" data-symbol="AAPL">AAPL</button>
-          <button type="button" class="lookup-chip" data-symbol="MSFT">MSFT</button>
-          <button type="button" class="lookup-chip" data-symbol="NVDA">NVDA</button>
-          <button type="button" class="lookup-chip" data-symbol="GOOGL">GOOGL</button>
-          <button type="button" class="lookup-chip" data-symbol="META">META</button>
-          <button type="button" class="lookup-chip" data-symbol="TSLA">TSLA</button>
-          <button type="button" class="lookup-chip" data-symbol="JPM">JPM</button>
-        </p>
-
-        <div id="lookup-status" class="lookup-status" role="status" aria-live="polite" hidden></div>
-
-        <article id="lookup-result" class="lookup-result" hidden>
-          <header class="lookup-header">
-            <div>
-              <p class="lookup-symbol"><span id="lk-symbol">--</span> <span class="lookup-exch" id="lk-exch"></span></p>
-              <h3 id="lk-name">--</h3>
-              <p class="lookup-meta"><span id="lk-sector">--</span> · <span id="lk-industry">--</span></p>
-            </div>
-            <div class="lookup-price-block">
-              <strong class="lookup-price" id="lk-price">--</strong>
-              <span class="lookup-change neutral" id="lk-change">--</span>
-              <span class="lookup-asof" id="lk-asof"></span>
-            </div>
-          </header>
-
-          <svg id="lk-spark" class="lookup-spark" viewBox="0 0 600 120" preserveAspectRatio="none" aria-label="One-year price chart">
-            <path id="lk-spark-fill" class="spark-fill" d=""></path>
-            <path id="lk-spark-line" class="spark-line" d=""></path>
-          </svg>
-          <p class="lookup-spark-caption">1-year daily close · Yahoo Finance (delayed)</p>
-
-          <div class="lookup-grid">
-            <section class="lookup-block">
-              <h4>Quote</h4>
-              <dl class="kv-grid">
-                <div><dt>Day range</dt><dd id="lk-day-range">--</dd></div>
-                <div><dt>52-wk range</dt><dd id="lk-52w-range">--</dd></div>
-                <div><dt>Volume</dt><dd id="lk-volume">--</dd></div>
-                <div><dt>Avg. volume</dt><dd id="lk-avg-volume">--</dd></div>
-                <div><dt>Prev. close</dt><dd id="lk-prev-close">--</dd></div>
-                <div><dt>Currency</dt><dd id="lk-currency">--</dd></div>
-              </dl>
-            </section>
-
-            <section class="lookup-block">
-              <h4>Valuation</h4>
-              <dl class="kv-grid">
-                <div><dt>Market cap</dt><dd id="lk-mktcap">--</dd></div>
-                <div><dt>Enterprise value</dt><dd id="lk-ev">--</dd></div>
-                <div><dt>P/E (TTM)</dt><dd id="lk-pe">--</dd></div>
-                <div><dt>Forward P/E</dt><dd id="lk-fpe">--</dd></div>
-                <div><dt>P/S (TTM)</dt><dd id="lk-ps">--</dd></div>
-                <div><dt>EV / EBITDA</dt><dd id="lk-ev-ebitda">--</dd></div>
-                <div><dt>EV / Revenue</dt><dd id="lk-ev-rev">--</dd></div>
-                <div><dt>PEG</dt><dd id="lk-peg">--</dd></div>
-              </dl>
-            </section>
-
-            <section class="lookup-block">
-              <h4>Profitability &amp; growth</h4>
-              <dl class="kv-grid">
-                <div><dt>Revenue (TTM)</dt><dd id="lk-rev">--</dd></div>
-                <div><dt>Revenue growth (YoY)</dt><dd id="lk-rev-growth">--</dd></div>
-                <div><dt>Gross margin</dt><dd id="lk-gross-margin">--</dd></div>
-                <div><dt>Operating margin</dt><dd id="lk-op-margin">--</dd></div>
-                <div><dt>Profit margin</dt><dd id="lk-profit-margin">--</dd></div>
-                <div><dt>EPS (TTM)</dt><dd id="lk-eps">--</dd></div>
-                <div><dt>ROE</dt><dd id="lk-roe">--</dd></div>
-                <div><dt>ROA</dt><dd id="lk-roa">--</dd></div>
-              </dl>
-            </section>
-
-            <section class="lookup-block">
-              <h4>Balance sheet</h4>
-              <dl class="kv-grid">
-                <div><dt>Cash &amp; equivalents</dt><dd id="lk-cash">--</dd></div>
-                <div><dt>Total debt</dt><dd id="lk-debt">--</dd></div>
-                <div><dt>Net debt</dt><dd id="lk-net-debt">--</dd></div>
-                <div><dt>Debt / equity</dt><dd id="lk-de">--</dd></div>
-                <div><dt>Current ratio</dt><dd id="lk-current">--</dd></div>
-                <div><dt>Free cash flow</dt><dd id="lk-fcf">--</dd></div>
-                <div><dt>Dividend yield</dt><dd id="lk-div-yield">--</dd></div>
-                <div><dt>Beta</dt><dd id="lk-beta">--</dd></div>
-              </dl>
-            </section>
-          </div>
-
-          <p class="lookup-disclaimer">
-            Quotes delayed; fundamentals based on Yahoo Finance summary modules and may lag the latest filings.
-            Not investment advice.
-          </p>
-        </article>
       </section>
 
       <!-- ── Broad Market ── -->
