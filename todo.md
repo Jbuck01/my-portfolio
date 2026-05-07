@@ -94,6 +94,31 @@
 - [x] **Test the site on Chrome, Firefox, and Safari**
   Brief description: Browser testing catches layout, JavaScript, and rendering differences before the site is shared publicly.
 
+**6. Stock Research Panel & Market Overview**
+
+Note: The original spec called for a React/Tailwind/Recharts frontend with a FastAPI/yfinance backend. GitHub Pages cannot host Python, so this is implemented with the existing static-snapshot pattern: the daily Node fetch script writes per-stock fundamentals into snapshot.json (Yahoo's HTTP endpoints return the same data yfinance scrapes), the dashboard reads that snapshot, and the browser also fetches live quotes from Yahoo on page load and every 5 minutes. Charts use Chart.js via CDN instead of Recharts to avoid adding a React build step.
+
+- [x] **Extend daily fetch script to pull 1-year price history for ^GSPC, ^NDX, ^DJI, ^RUT, ^VIX**
+  Brief description: One-year line charts on the Market Overview need historical daily closes; written into snapshot.json by the existing GitHub Actions cron.
+
+- [x] **Extend daily fetch script to pull fundamentals for popular tickers (AAPL, MSFT, GOOGL, AMZN, NVDA, TSLA, META, JPM, V, BRK-B)**
+  Brief description: Pulls valuation, income, balance-sheet, cash-flow, and returns metrics from Yahoo's quoteSummary endpoint into snapshot.json so the research panel can render without a backend.
+
+- [x] **Extend daily fetch script to pull recent news headlines and a sector-peer mapping for each popular ticker**
+  Brief description: News headlines from Yahoo's search endpoint power the Catalysts & Risk list; a curated sector-peer mapping powers the Comparable Companies table.
+
+- [x] **Add Market Overview section to dashboard.html with 1-year line charts for the 5 indices**
+  Brief description: Renders S&P 500, NASDAQ-100, Dow, Russell 2000, and VIX with current price, daily change, and a 1-year line chart, using Chart.js via CDN.
+
+- [x] **Add Stock Research Panel with ticker search, popular-ticker dropdown, metrics, charts, news, and peer table**
+  Brief description: Single panel that lets the user pick a ticker and renders header, valuation/income/balance/cash-flow/returns cards, price+volume and quarterly revenue/EPS charts, recent news, and a peer comparison table from the cached snapshot, with a clean error state for unknown tickers.
+
+- [x] **Add 5-minute live auto-refresh for the research panel and Market Overview quotes**
+  Brief description: Browser fetches current quotes from Yahoo Finance on page load and every 5 minutes so visitors never see stale prices between daily snapshot updates.
+
+- [x] **Deploy the Cloudflare Worker (worker/yahoo-proxy.js) and paste its URL into dashboard.js**
+  Brief description: Deployed at https://yahoo-proxy.jedbuckert.workers.dev — wired into dashboard.js. Verified end-to-end: typing ORCL pulls full fundamentals (P/E 34.77×, revenue $64.08B), 6 recent news headlines, and a peer table with CSCO, IBM, QCOM, INTC, DELL each with comparison metrics.
+
 ## Free Data Source Plan
 
 - [x] **AI and technology funding trends**
@@ -124,3 +149,6 @@
 
 - [x] **Seed snapshot.json with real stock data so dashboard loads values immediately**
   Brief description: Ran scripts/fetch-data.js locally to populate data/snapshot.json with current Yahoo Finance prices for all 8 symbols (S&P 500, Dow, Nasdaq, Russell 2000, VIX, QQQ, XLC, BOTZ) and EUR/USD. FRED data populates automatically on first GitHub Actions run.
+
+- [ ] **Fix the "Rates, inflation & labor" and "Real estate & mortgage" sections to display the most recent numbers**
+  Brief description: Those two sections currently aren't showing fresh values. Both rely on FRED data (snapshot.fred + a live fred.stlouisfed.org CSV fallback in dashboard.js). The committed snapshot.json has snapshot.fred = {} — meaning the GitHub Actions cron isn't successfully fetching FRED, so the dashboard falls back to live browser fetches that may also be failing or showing stale values. Investigate whether GitHub Actions can reach fred.stlouisfed.org (try the workflow run logs for ECONNRESET / 4xx), and if not, switch FRED to an alternative public source (e.g. fred.stlouisfed.org/series/{ID}/downloaddata/{ID}.csv via a different host, or BLS/Treasury direct endpoints) or pre-cache the CSVs in the repo via the cron. End goal: every metric in those two sections shows a recent value with a current-as-of date.

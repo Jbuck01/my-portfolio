@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.js"></script>
   </head>
   <body>
     <header class="site-header">
@@ -38,6 +39,191 @@
         <div class="dash-controls">
           <span id="updated-at" class="dash-timestamp">Not yet loaded</span>
           <button class="button primary" id="refresh-data" type="button">↻ Refresh data</button>
+        </div>
+      </section>
+
+      <!-- ── Market Overview (Feature 1) ── -->
+      <section class="dash-section" id="section-market-overview">
+        <div class="section-heading">
+          <p class="eyebrow">Market Overview</p>
+          <h2>Major U.S. indices · 1-year trend</h2>
+        </div>
+        <div class="market-overview-grid" aria-live="polite">
+          <article class="market-card" data-symbol="^GSPC">
+            <div class="ic-header">
+              <span class="metric-label">S&amp;P 500 <span class="muted-inline">(^GSPC)</span></span>
+              <span class="ic-source">Yahoo Finance · delayed</span>
+            </div>
+            <strong class="ic-value" id="mo-sp500">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="mo-sp500-chg">--</span>
+              <span class="ic-date" id="mo-sp500-date"></span>
+            </div>
+            <div class="market-chart-wrap"><canvas class="market-chart" id="chart-sp500"></canvas></div>
+          </article>
+          <article class="market-card" data-symbol="^NDX">
+            <div class="ic-header">
+              <span class="metric-label">NASDAQ-100 <span class="muted-inline">(^NDX)</span></span>
+              <span class="ic-source">Yahoo Finance · delayed</span>
+            </div>
+            <strong class="ic-value" id="mo-ndx">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="mo-ndx-chg">--</span>
+              <span class="ic-date" id="mo-ndx-date"></span>
+            </div>
+            <div class="market-chart-wrap"><canvas class="market-chart" id="chart-ndx"></canvas></div>
+          </article>
+          <article class="market-card" data-symbol="^DJI">
+            <div class="ic-header">
+              <span class="metric-label">Dow Jones <span class="muted-inline">(^DJI)</span></span>
+              <span class="ic-source">Yahoo Finance · delayed</span>
+            </div>
+            <strong class="ic-value" id="mo-dow">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="mo-dow-chg">--</span>
+              <span class="ic-date" id="mo-dow-date"></span>
+            </div>
+            <div class="market-chart-wrap"><canvas class="market-chart" id="chart-dow"></canvas></div>
+          </article>
+          <article class="market-card" data-symbol="^RUT">
+            <div class="ic-header">
+              <span class="metric-label">Russell 2000 <span class="muted-inline">(^RUT)</span></span>
+              <span class="ic-source">Yahoo Finance · delayed</span>
+            </div>
+            <strong class="ic-value" id="mo-rut">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="mo-rut-chg">--</span>
+              <span class="ic-date" id="mo-rut-date"></span>
+            </div>
+            <div class="market-chart-wrap"><canvas class="market-chart" id="chart-rut"></canvas></div>
+          </article>
+          <article class="market-card" data-symbol="^VIX">
+            <div class="ic-header">
+              <span class="metric-label">VIX <span class="muted-inline">(^VIX)</span></span>
+              <span class="ic-source">Yahoo Finance · delayed</span>
+            </div>
+            <strong class="ic-value" id="mo-vix">--</strong>
+            <div class="ic-row">
+              <span class="ic-change neutral" id="mo-vix-chg">--</span>
+              <span class="ic-date" id="mo-vix-date"></span>
+            </div>
+            <div class="market-chart-wrap"><canvas class="market-chart" id="chart-vix"></canvas></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ── Stock Research Panel (Feature 2 + 3) ── -->
+      <section class="dash-section" id="section-stock-research">
+        <div class="section-heading">
+          <p class="eyebrow">Stock Research</p>
+          <h2>Pick a ticker · fundamentals, charts, news &amp; peers</h2>
+        </div>
+
+        <form class="stock-search" id="stock-search-form" autocomplete="off">
+          <label class="stock-search-label" for="ticker-input">
+            <span>Search ticker</span>
+            <input
+              type="text"
+              id="ticker-input"
+              name="ticker"
+              placeholder="e.g. AAPL"
+              spellcheck="false"
+              autocapitalize="characters"
+              maxlength="8">
+          </label>
+          <label class="stock-search-label" for="ticker-select">
+            <span>Or pick a popular stock</span>
+            <select id="ticker-select" name="popular">
+              <option value="AAPL">AAPL · Apple</option>
+              <option value="MSFT">MSFT · Microsoft</option>
+              <option value="GOOGL">GOOGL · Alphabet</option>
+              <option value="AMZN">AMZN · Amazon</option>
+              <option value="NVDA">NVDA · NVIDIA</option>
+              <option value="TSLA">TSLA · Tesla</option>
+              <option value="META">META · Meta Platforms</option>
+              <option value="JPM">JPM · JPMorgan Chase</option>
+              <option value="V">V · Visa</option>
+              <option value="BRK-B">BRK-B · Berkshire Hathaway</option>
+            </select>
+          </label>
+          <button type="submit" class="button primary" id="ticker-load">Load</button>
+        </form>
+
+        <!-- Error state -->
+        <div class="stock-error" id="stock-error" hidden></div>
+
+        <!-- Loading state -->
+        <div class="stock-loading" id="stock-loading" hidden>Loading ticker data…</div>
+
+        <!-- Panel body — populated by JS once a ticker is selected -->
+        <div class="stock-panel" id="stock-panel" hidden>
+          <!-- Header -->
+          <div class="stock-header" id="stock-header"></div>
+
+          <!-- Metric grids -->
+          <div class="metric-block">
+            <h3>Valuation</h3>
+            <div class="metric-grid" id="stock-valuation"></div>
+          </div>
+          <div class="metric-block">
+            <h3>Income statement</h3>
+            <div class="metric-grid" id="stock-income"></div>
+          </div>
+          <div class="metric-block">
+            <h3>Balance sheet</h3>
+            <div class="metric-grid" id="stock-balance"></div>
+          </div>
+          <div class="metric-block">
+            <h3>Cash flow</h3>
+            <div class="metric-grid" id="stock-cashflow"></div>
+          </div>
+          <div class="metric-block">
+            <h3>Returns</h3>
+            <div class="metric-grid" id="stock-returns"></div>
+          </div>
+
+          <!-- Charts -->
+          <div class="metric-block">
+            <h3>Price &amp; volume · 1-year</h3>
+            <div class="stock-chart-wrap"><canvas id="stock-price-chart"></canvas></div>
+          </div>
+          <div class="charts-row">
+            <div class="metric-block">
+              <h3>Revenue · last 4 quarters</h3>
+              <div class="stock-chart-wrap small"><canvas id="stock-revenue-chart"></canvas></div>
+            </div>
+            <div class="metric-block">
+              <h3>EPS actual vs estimate · last 4 quarters</h3>
+              <div class="stock-chart-wrap small"><canvas id="stock-eps-chart"></canvas></div>
+            </div>
+          </div>
+
+          <!-- Catalysts & Risk (news) -->
+          <div class="metric-block">
+            <h3>Catalysts &amp; risk · recent headlines</h3>
+            <ul class="news-list" id="stock-news"></ul>
+          </div>
+
+          <!-- Comparable Companies (Feature 3) -->
+          <div class="metric-block">
+            <h3>Comparable companies</h3>
+            <div class="table-wrap">
+              <table class="peer-table" id="stock-peers">
+                <thead>
+                  <tr>
+                    <th>Ticker</th>
+                    <th>Company</th>
+                    <th>P/E</th>
+                    <th>EV/EBITDA</th>
+                    <th>Rev. growth (YoY)</th>
+                    <th>Gross margin</th>
+                    <th>ROE</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </section>
 

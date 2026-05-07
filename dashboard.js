@@ -362,7 +362,635 @@ async function refreshDashboard() {
   if (btn) { btn.disabled = false; btn.textContent = "↻ Refresh data"; }
 }
 
-// ── Event listeners ───────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════════════════
+// Market Overview (Feature 1) + Stock Research Panel (Feature 2 + 3)
+// ════════════════════════════════════════════════════════════════════════════
+
+// Cloudflare Worker URL — paste your deployed *.workers.dev URL here to enable
+// fundamentals/news/peers for arbitrary tickers. When left as the placeholder,
+// the dashboard falls back to chart-only data for non-cached tickers.
+// Source: worker/yahoo-proxy.js (see comment header for deploy steps).
+const WORKER_URL = "https://yahoo-proxy.jedbuckert.workers.dev";
+const WORKER_ENABLED = WORKER_URL && !WORKER_URL.startsWith("REPLACE");
+
+async function workerFetch(path, params) {
+  if (!WORKER_ENABLED) throw new Error("Worker URL not configured");
+  const qs = new URLSearchParams(params).toString();
+  const url = `${WORKER_URL}${path}?${qs}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    let detail = "";
+    try { detail = (await res.json()).error || ""; } catch {}
+    throw new Error(`Worker ${path} ${res.status}${detail ? ": " + detail : ""}`);
+  }
+  return res.json();
+}
+
+const COLORS = {
+  accent: "#5db8f5",
+  green:  "#4bd498",
+  red:    "#e06868",
+  muted:  "#8890a4",
+  line:   "#272c3a"
+};
+
+// ── Chart helpers ─────────────────────────────────────────────────────────────
+
+const chartRegistry = {};
+
+function destroyChart(id) {
+  if (chartRegistry[id]) {
+    chartRegistry[id].destroy();
+    delete chartRegistry[id];
+  }
+}
+
+function waitForChart(retries = 60) {
+  return new Promise((resolve, reject) => {
+    const tick = () => {
+      if (typeof Chart !== "undefined") return resolve();
+      if (--retries <= 0) return reject(new Error("Chart.js failed to load"));
+      setTimeout(tick, 100);
+    };
+    tick();
+  });
+}
+
+function makeMiniLineChart(canvasId, dates, values, color) {
+  destroyChart(canvasId);
+  const ctx = document.getElementById(canvasId);
+  if (!ctx || !values?.length) return;
+  chartRegistry[canvasId] = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: dates,
+      datasets: [{
+        data: values,
+        borderColor: color,
+        backgroundColor: color + "22",
+        borderWidth: 1.5,
+        pointRadius: 0,
+        fill: true,
+        tension: 0.15
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      scales: { x: { display: false }, y: { display: false } },
+      interaction: { mode: "nearest", intersect: false },
+      animation: false
+    }
+  });
+}
+
+function makePriceVolumeChart(canvasId, dates, closes, volumes) {
+  destroyChart(canvasId);
+  const ctx = document.getElementById(canvasId);
+  if (!ctx || !closes?.length) return;
+  chartRegistry[canvasId] = new Chart(ctx, {
+    data: {
+      labels: dates,
+      datasets: [
+        {
+          type: "line",
+          label: "Price",
+          data: closes,
+          borderColor: COLORS.accent,
+          backgroundColor: COLORS.accent + "22",
+          borderWidth: 1.8,
+          pointRadius: 0,
+          yAxisID: "y",
+          tension: 0.15,
+          fill: true,
+          order: 1
+        },
+        {
+          type: "bar",
+          label: "Volume",
+          data: volumes,
+          backgroundColor: COLORS.muted + "55",
+          borderWidth: 0,
+          yAxisID: "y1",
+          order: 2
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: { display: true, labels: { color: COLORS.muted, boxWidth: 14 } },
+        tooltip: {
+          callbacks: {
+            label(ctx) {
+              const v = ctx.parsed.y;
+              if (ctx.dataset.label === "Volume") {
+                return `Volume: ${v ? Number(v).toLocaleString() : "--"}`;
+              }
+              return `${ctx.dataset.label}: ${v != null ? Number(v).toFixed(2) : "--"}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x:  { ticks: { color: COLORS.muted, maxTicksLimit: 6 }, grid: { color: COLORS.line } },
+        y:  { position: "left", ticks: { color: COLORS.muted }, grid: { color: COLORS.line } },
+        y1: { position: "right", ticks: { color: COLORS.muted, callback: v => (v >= 1e6 ? (v/1e6).toFixed(0) + "M" : v) }, grid: { drawOnChartArea: false } }
+      },
+      animation: false
+    }
+  });
+}
+
+function makeBarChart(canvasId, labels, datasets) {
+  destroyChart(canvasId);
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return;
+  chartRegistry[canvasId] = new Chart(ctx, {
+    type: "bar",
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: datasets.length > 1, labels: { color: COLORS.muted } },
+        tooltip: { mode: "index", intersect: false }
+      },
+      scales: {
+        x: { ticks: { color: COLORS.muted }, grid: { color: COLORS.line } },
+        y: { ticks: { color: COLORS.muted }, grid: { color: COLORS.line } }
+      },
+      animation: false
+    }
+  });
+}
+
+// ── Market Overview ───────────────────────────────────────────────────────────
+
+const MARKET_OVERVIEW = [
+  { key: "sp500",       cardId: "mo-sp500", chartId: "chart-sp500", symbol: "^GSPC" },
+  { key: "nasdaq100",   cardId: "mo-ndx",   chartId: "chart-ndx",   symbol: "^NDX"  },
+  { key: "dow",         cardId: "mo-dow",   chartId: "chart-dow",   symbol: "^DJI"  },
+  { key: "russell2000", cardId: "mo-rut",   chartId: "chart-rut",   symbol: "^RUT"  },
+  { key: "vix",         cardId: "mo-vix",   chartId: "chart-vix",   symbol: "^VIX"  }
+];
+
+function renderMarketOverviewCard(entry, quote, history) {
+  if (!quote) return;
+  setText(entry.cardId, fmt.number(quote.value, 2));
+  const chg = formatChange(quote.value, quote.prev);
+  setText(`${entry.cardId}-chg`, chg.text);
+  setClass(`${entry.cardId}-chg`, `ic-change ${chg.cls}`);
+  setText(`${entry.cardId}-date`, quote.date ? formatDate(quote.date) : "");
+
+  if (history?.dates?.length && history?.closes?.length) {
+    const trendUp = history.closes[history.closes.length - 1] >= history.closes[0];
+    const color = trendUp ? COLORS.green : COLORS.red;
+    makeMiniLineChart(entry.chartId, history.dates, history.closes, color);
+  }
+}
+
+async function renderMarketOverview(snapshot) {
+  await waitForChart().catch(err => console.warn(err.message));
+  for (const entry of MARKET_OVERVIEW) {
+    const quote   = snapshot?.stocks?.[entry.key];
+    const history = snapshot?.indexHistory?.[entry.symbol];
+    renderMarketOverviewCard(entry, quote, history);
+  }
+}
+
+async function refreshMarketOverviewQuotes() {
+  // Live-refresh just the price/change/date fields (not the chart) every 5 minutes
+  for (const entry of MARKET_OVERVIEW) {
+    try {
+      const quote = await fetchYahooFinance(entry.symbol);
+      setText(entry.cardId, fmt.number(quote.value, 2));
+      const chg = formatChange(quote.value, quote.prev);
+      setText(`${entry.cardId}-chg`, chg.text);
+      setClass(`${entry.cardId}-chg`, `ic-change ${chg.cls}`);
+      if (quote.date) setText(`${entry.cardId}-date`, formatDate(quote.date));
+    } catch (e) {
+      console.warn(`Live refresh ${entry.symbol}:`, e.message);
+    }
+  }
+}
+
+// ── Stock Research Panel ──────────────────────────────────────────────────────
+
+let currentSnapshot = null;
+let currentTicker   = null;
+
+const POPULAR_TICKERS = ["AAPL","MSFT","GOOGL","AMZN","NVDA","TSLA","META","JPM","V","BRK-B"];
+
+const fmtMetric = {
+  pct(v, decimals = 2) {
+    const n = Number(v);
+    if (!Number.isFinite(n)) return null;
+    return (n * 100).toFixed(decimals) + "%";
+  },
+  pctRaw(v, decimals = 2) {
+    const n = Number(v);
+    if (!Number.isFinite(n)) return null;
+    return n.toFixed(decimals) + "%";
+  },
+  number(v, decimals = 2) {
+    const n = Number(v);
+    return Number.isFinite(n) ? n.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) : null;
+  },
+  ratio(v) {
+    const n = Number(v);
+    return Number.isFinite(n) ? n.toFixed(2) + "×" : null;
+  },
+  bigDollar(v) {
+    const n = Number(v);
+    if (!Number.isFinite(n)) return null;
+    const abs = Math.abs(n);
+    if (abs >= 1e12) return (n / 1e12).toFixed(2) + "T";
+    if (abs >= 1e9)  return (n / 1e9).toFixed(2)  + "B";
+    if (abs >= 1e6)  return (n / 1e6).toFixed(2)  + "M";
+    return n.toLocaleString("en-US", { maximumFractionDigits: 0 });
+  },
+  dollar(v, decimals = 2) {
+    const n = Number(v);
+    return Number.isFinite(n) ? "$" + n.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) : null;
+  }
+};
+
+function metricCard(label, value, sub) {
+  const v = value ?? "--";
+  const isEmpty = value == null;
+  const subHtml = sub ? `<span class="metric-card-sub">${sub}</span>` : "";
+  return `<div class="metric-card">
+    <span class="metric-card-label">${label}</span>
+    <span class="metric-card-value${isEmpty ? " empty" : ""}">${v}</span>
+    ${subHtml}
+  </div>`;
+}
+
+function fillGrid(id, html) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = html;
+}
+
+function showStockError(msg) {
+  const err = document.getElementById("stock-error");
+  const panel = document.getElementById("stock-panel");
+  const loading = document.getElementById("stock-loading");
+  if (loading) loading.hidden = true;
+  if (panel) panel.hidden = true;
+  if (err) {
+    err.hidden = false;
+    err.textContent = msg;
+  }
+}
+
+function clearStockError() {
+  const err = document.getElementById("stock-error");
+  if (err) err.hidden = true;
+}
+
+function setStockLoading(on) {
+  const loading = document.getElementById("stock-loading");
+  if (loading) loading.hidden = !on;
+}
+
+function renderStockHeader(ticker, fundamentals, liveQuote) {
+  const profile = fundamentals?.profile || {};
+  const quote   = fundamentals?.quote   || {};
+  const analyst = fundamentals?.analyst || {};
+  const price   = liveQuote?.value ?? quote?.price;
+  const prev    = liveQuote?.prev;
+  const change  = (price != null && prev != null && prev !== 0)
+    ? { abs: price - prev, pct: ((price - prev) / Math.abs(prev)) * 100 }
+    : null;
+  const cls = change && change.abs >= 0 ? "positive" : (change ? "negative" : "neutral");
+  const arrow = change && change.abs >= 0 ? "▲" : (change ? "▼" : "");
+  const sign  = change && change.abs >= 0 ? "+" : "";
+
+  const high52 = liveQuote?.fiftyTwoWeekHigh ?? quote?.fiftyTwoWeekHigh;
+  const low52  = liveQuote?.fiftyTwoWeekLow  ?? quote?.fiftyTwoWeekLow;
+  const recKey = analyst.recommendationKey ? analyst.recommendationKey.replace(/_/g, " ") : null;
+  const target = analyst.targetMean;
+
+  const recBadgeClass = recKey
+    ? (/buy|outperform/i.test(recKey) ? "badge-green" : (/sell|underperform/i.test(recKey) ? "badge-red" : "badge-blue"))
+    : "badge-blue";
+
+  const headerEl = document.getElementById("stock-header");
+  if (!headerEl) return;
+  headerEl.innerHTML = `
+    <div class="stock-header-main">
+      <h3 class="stock-header-name">${profile.longName || profile.shortName || liveQuote?.longName || ticker}</h3>
+      <div class="stock-header-meta">${ticker}${profile.exchange || liveQuote?.exchange ? " · " + (profile.exchange || liveQuote?.exchange) : ""}${profile.sector ? " · " + profile.sector : ""}</div>
+      <div class="stock-header-price">
+        <strong>${price != null ? fmtMetric.dollar(price, 2) : "--"}</strong>
+        ${change ? `<span class="ic-change ${cls}">${arrow} ${sign}${change.abs.toFixed(2)} (${sign}${change.pct.toFixed(2)}%)</span>` : ""}
+      </div>
+    </div>
+    <div class="stock-header-side">
+      <div class="stock-header-row"><span>52-week high</span><strong>${high52 != null ? fmtMetric.dollar(high52, 2) : "--"}</strong></div>
+      <div class="stock-header-row"><span>52-week low</span><strong>${low52 != null ? fmtMetric.dollar(low52, 2) : "--"}</strong></div>
+      <div class="stock-header-row"><span>Analyst rating</span>${recKey ? `<span class="badge ${recBadgeClass}">${recKey.toUpperCase()}</span>` : "<strong>--</strong>"}</div>
+      <div class="stock-header-row"><span>Price target (mean)</span><strong>${target != null ? fmtMetric.dollar(target, 2) : "--"}</strong></div>
+      ${analyst.numberOfAnalysts ? `<div class="stock-header-row"><span>Analyst coverage</span><strong>${analyst.numberOfAnalysts} analysts</strong></div>` : ""}
+    </div>`;
+}
+
+function renderStockMetrics(fundamentals) {
+  const v = fundamentals?.valuation || {};
+  const i = fundamentals?.income    || {};
+  const b = fundamentals?.balance   || {};
+  const c = fundamentals?.cashflow  || {};
+  const r = fundamentals?.returns   || {};
+
+  fillGrid("stock-valuation", [
+    metricCard("P/E (trailing)", fmtMetric.ratio(v.trailingPE)),
+    metricCard("P/E (forward)",  fmtMetric.ratio(v.forwardPE)),
+    metricCard("EV / EBITDA",    fmtMetric.ratio(v.evToEbitda)),
+    metricCard("Price / Sales",  fmtMetric.ratio(v.priceToSales)),
+    metricCard("Price / Book",   fmtMetric.ratio(v.priceToBook)),
+    metricCard("PEG Ratio",      fmtMetric.ratio(v.pegRatio))
+  ].join(""));
+
+  fillGrid("stock-income", [
+    metricCard("Revenue (TTM)",  fmtMetric.bigDollar(i.revenueTTM) ? "$" + fmtMetric.bigDollar(i.revenueTTM) : null),
+    metricCard("Revenue growth (YoY)", fmtMetric.pct(i.revenueGrowthYoY, 2)),
+    metricCard("Gross margin",   fmtMetric.pct(i.grossMargin, 2)),
+    metricCard("EBITDA margin",  fmtMetric.pct(i.ebitdaMargin, 2)),
+    metricCard("Net income (TTM)", i.netIncome != null ? "$" + fmtMetric.bigDollar(i.netIncome) : null),
+    metricCard("EPS (trailing)", fmtMetric.number(i.epsTrailing, 2)),
+    metricCard("EPS (forward)",  fmtMetric.number(i.epsForward, 2))
+  ].join(""));
+
+  fillGrid("stock-balance", [
+    metricCard("Total cash",   b.totalCash != null ? "$" + fmtMetric.bigDollar(b.totalCash) : null),
+    metricCard("Total debt",   b.totalDebt != null ? "$" + fmtMetric.bigDollar(b.totalDebt) : null),
+    metricCard("Net debt",     b.netDebt   != null ? "$" + fmtMetric.bigDollar(b.netDebt)   : null),
+    metricCard("Debt / Equity", fmtMetric.number(b.debtToEquity, 2))
+  ].join(""));
+
+  fillGrid("stock-cashflow", [
+    metricCard("Free cash flow (TTM)",   c.freeCashflow != null ? "$" + fmtMetric.bigDollar(c.freeCashflow) : null),
+    metricCard("Operating cash flow",    c.operatingCashflow != null ? "$" + fmtMetric.bigDollar(c.operatingCashflow) : null),
+    metricCard("Capital expenditure",    c.capex != null ? "$" + fmtMetric.bigDollar(c.capex) : null),
+    metricCard("FCF yield",              fmtMetric.pct(c.fcfYield, 2))
+  ].join(""));
+
+  fillGrid("stock-returns", [
+    metricCard("Return on Equity",      fmtMetric.pct(r.roe, 2)),
+    metricCard("Return on Assets",      fmtMetric.pct(r.roa, 2)),
+    metricCard("Return on Inv. Capital", fmtMetric.pct(r.roic, 2))
+  ].join(""));
+}
+
+async function renderStockCharts(tickerData) {
+  await waitForChart().catch(() => {});
+  const hist = tickerData?.history;
+  if (hist?.dates?.length && hist?.closes?.length) {
+    makePriceVolumeChart("stock-price-chart", hist.dates, hist.closes, hist.volumes || []);
+  } else {
+    destroyChart("stock-price-chart");
+  }
+
+  const q = tickerData?.fundamentals?.quarterly;
+  if (q?.dates?.length) {
+    const labels = q.dates.map(d => d?.slice(0, 7) || "");
+    makeBarChart("stock-revenue-chart", labels, [{
+      label: "Revenue",
+      data: q.revenue,
+      backgroundColor: COLORS.accent + "cc",
+      borderRadius: 4
+    }]);
+  } else {
+    destroyChart("stock-revenue-chart");
+  }
+
+  const eps = tickerData?.fundamentals?.epsTrend;
+  if (eps?.dates?.length) {
+    const labels = eps.dates.map(d => d?.slice(0, 7) || "");
+    makeBarChart("stock-eps-chart", labels, [
+      { label: "Actual",   data: eps.epsActual,   backgroundColor: COLORS.green + "cc", borderRadius: 4 },
+      { label: "Estimate", data: eps.epsEstimate, backgroundColor: COLORS.muted + "aa", borderRadius: 4 }
+    ]);
+  } else {
+    destroyChart("stock-eps-chart");
+  }
+}
+
+function renderStockNews(news) {
+  const el = document.getElementById("stock-news");
+  if (!el) return;
+  if (!news?.length) {
+    el.innerHTML = `<li class="metric-card-sub">No recent headlines available.</li>`;
+    return;
+  }
+  el.innerHTML = news.map(n => {
+    const date = n.publishedAt ? new Date(n.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "";
+    return `<li>
+      <a href="${n.link}" target="_blank" rel="noopener noreferrer">${n.title}</a>
+      <div class="news-meta">${n.publisher || ""}${date ? " · " + date : ""}</div>
+    </li>`;
+  }).join("");
+}
+
+function renderStockPeers(ticker, snapshot) {
+  const peers = snapshot?.peerMap?.[ticker] || [];
+  const tbody = document.querySelector("#stock-peers tbody");
+  if (!tbody) return;
+
+  // Include the loaded ticker as the first row so the user can compare directly
+  const ownRow = snapshot?.tickers?.[ticker] ? {
+    symbol: ticker,
+    longName: snapshot.tickers[ticker].fundamentals?.profile?.longName,
+    trailingPE: snapshot.tickers[ticker].fundamentals?.valuation?.trailingPE,
+    evToEbitda: snapshot.tickers[ticker].fundamentals?.valuation?.evToEbitda,
+    revenueGrowth: snapshot.tickers[ticker].fundamentals?.income?.revenueGrowthYoY,
+    grossMargin: snapshot.tickers[ticker].fundamentals?.income?.grossMargin,
+    roe: snapshot.tickers[ticker].fundamentals?.returns?.roe
+  } : null;
+
+  const rows = [ownRow, ...peers.map(p => snapshot?.peers?.[p])].filter(Boolean);
+
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="7" class="empty">No peer data available.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = rows.map(p => {
+    const isCurrent = p.symbol === ticker;
+    return `<tr${isCurrent ? ' style="background: rgba(93, 184, 245, 0.08)"' : ""}>
+      <td class="ticker-cell">${p.symbol}${isCurrent ? " <span class='muted-inline'>(current)</span>" : ""}</td>
+      <td>${p.longName || "--"}</td>
+      <td${p.trailingPE == null ? ' class="empty"' : ""}>${fmtMetric.ratio(p.trailingPE) || "--"}</td>
+      <td${p.evToEbitda == null ? ' class="empty"' : ""}>${fmtMetric.ratio(p.evToEbitda) || "--"}</td>
+      <td${p.revenueGrowth == null ? ' class="empty"' : ""}>${fmtMetric.pct(p.revenueGrowth, 1) || "--"}</td>
+      <td${p.grossMargin == null ? ' class="empty"' : ""}>${fmtMetric.pct(p.grossMargin, 1) || "--"}</td>
+      <td${p.roe == null ? ' class="empty"' : ""}>${fmtMetric.pct(p.roe, 1) || "--"}</td>
+    </tr>`;
+  }).join("");
+}
+
+async function loadTicker(ticker, snapshot) {
+  ticker = (ticker || "").toUpperCase().trim();
+  if (!ticker) return;
+  clearStockError();
+  setStockLoading(true);
+  currentTicker = ticker;
+
+  // Try snapshot first (populated for popular tickers)
+  let tickerData = snapshot?.tickers?.[ticker] || null;
+  let workerPeers = null; // { peers: [...], peerSummaries: [...] }
+
+  // Always try a live quote
+  let liveQuote = null;
+  try {
+    liveQuote = await fetchYahooFinance(ticker);
+  } catch (e) {
+    console.warn(`Live quote failed for ${ticker}:`, e.message);
+  }
+
+  // For non-cached tickers, ask the Worker for fundamentals/news/peers in
+  // parallel. If the Worker isn't configured, these calls throw and we fall
+  // back to the chart-only path below.
+  if (!tickerData?.fundamentals && WORKER_ENABLED) {
+    const [fundRes, newsRes, peersRes] = await Promise.allSettled([
+      workerFetch("/fundamentals", { symbol: ticker }),
+      workerFetch("/news",         { symbol: ticker }),
+      workerFetch("/peers",        { symbol: ticker })
+    ]);
+    tickerData = tickerData || { symbol: ticker };
+    if (fundRes.status === "fulfilled") tickerData.fundamentals = fundRes.value;
+    else                                console.warn(`Worker fundamentals ${ticker}:`, fundRes.reason?.message);
+    if (newsRes.status === "fulfilled") tickerData.news = newsRes.value;
+    else                                console.warn(`Worker news ${ticker}:`, newsRes.reason?.message);
+    if (peersRes.status === "fulfilled") workerPeers = peersRes.value;
+    else                                 console.warn(`Worker peers ${ticker}:`, peersRes.reason?.message);
+  }
+
+  // Live history (chart endpoint allows browser CORS — works for any ticker)
+  if (!tickerData?.history) {
+    try {
+      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1y`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const json = await res.json();
+        const result = json.chart?.result?.[0];
+        if (result) {
+          const ts = result.timestamp || [];
+          const closes = result.indicators?.quote?.[0]?.close || [];
+          const volumes = result.indicators?.quote?.[0]?.volume || [];
+          const dates = [], c = [], v = [];
+          for (let i = 0; i < ts.length; i++) {
+            if (closes[i] != null) {
+              dates.push(new Date(ts[i] * 1000).toISOString().slice(0, 10));
+              c.push(closes[i]);
+              v.push(volumes[i] != null ? volumes[i] : null);
+            }
+          }
+          tickerData = { ...(tickerData || {}), symbol: ticker, history: { dates, closes: c, volumes: v } };
+        }
+      }
+    } catch (e) {
+      console.warn(`Live history failed for ${ticker}:`, e.message);
+    }
+  }
+
+  // Hard error: nothing usable
+  if (!liveQuote && !tickerData?.history && !tickerData?.fundamentals) {
+    setStockLoading(false);
+    showStockError(`Could not find data for "${ticker}". Yahoo Finance returned no usable data — check the ticker spelling and try again.`);
+    destroyChart("stock-price-chart");
+    destroyChart("stock-revenue-chart");
+    destroyChart("stock-eps-chart");
+    return;
+  }
+
+  // Show panel
+  const panel = document.getElementById("stock-panel");
+  if (panel) panel.hidden = false;
+  setStockLoading(false);
+
+  // Header (uses fundamentals if cached, falls back to liveQuote)
+  renderStockHeader(ticker, tickerData?.fundamentals, liveQuote);
+
+  // Metric grids — only meaningful if we have cached fundamentals
+  if (tickerData?.fundamentals) {
+    renderStockMetrics(tickerData.fundamentals);
+  } else {
+    const reason = WORKER_ENABLED
+      ? "Fundamentals could not be fetched for this ticker."
+      : "Fundamentals are cached daily for the popular-tickers list. Deploy the Cloudflare Worker (worker/yahoo-proxy.js) to enable any ticker.";
+    const placeholder = `<div class="metric-card"><span class="metric-card-label">Unavailable</span><span class="metric-card-value empty">--</span><span class="metric-card-sub">${reason}</span></div>`;
+    fillGrid("stock-valuation", placeholder);
+    fillGrid("stock-income",    placeholder);
+    fillGrid("stock-balance",   placeholder);
+    fillGrid("stock-cashflow",  placeholder);
+    fillGrid("stock-returns",   placeholder);
+  }
+
+  // Charts
+  await renderStockCharts(tickerData);
+
+  // News
+  renderStockNews(tickerData?.news);
+
+  // Peers — three sources, in priority order:
+  //   1. snapshot.peerMap (curated list for cached popular tickers)
+  //   2. Worker /peers response (for arbitrary tickers, Yahoo's recommendations)
+  //   3. Empty fallback message
+  if (snapshot?.peerMap?.[ticker]) {
+    renderStockPeers(ticker, snapshot);
+  } else if (workerPeers?.peerSummaries?.length) {
+    renderStockPeersFromWorker(ticker, tickerData?.fundamentals, workerPeers.peerSummaries);
+  } else {
+    const tbody = document.querySelector("#stock-peers tbody");
+    if (tbody) {
+      const msg = WORKER_ENABLED
+        ? "No peer recommendations returned for this ticker."
+        : "Peer data is curated for the popular-tickers list. Deploy the Cloudflare Worker to enable any ticker.";
+      tbody.innerHTML = `<tr><td colspan="7" class="empty">${msg}</td></tr>`;
+    }
+  }
+}
+
+function renderStockPeersFromWorker(ticker, fundamentals, peerSummaries) {
+  const tbody = document.querySelector("#stock-peers tbody");
+  if (!tbody) return;
+
+  const ownRow = fundamentals ? {
+    symbol: ticker,
+    longName:      fundamentals.profile?.longName,
+    trailingPE:    fundamentals.valuation?.trailingPE,
+    evToEbitda:    fundamentals.valuation?.evToEbitda,
+    revenueGrowth: fundamentals.income?.revenueGrowthYoY,
+    grossMargin:   fundamentals.income?.grossMargin,
+    roe:           fundamentals.returns?.roe
+  } : null;
+
+  const rows = [ownRow, ...peerSummaries].filter(Boolean);
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="7" class="empty">No peer data available.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = rows.map(p => {
+    const isCurrent = p.symbol === ticker;
+    return `<tr${isCurrent ? ' style="background: rgba(93, 184, 245, 0.08)"' : ""}>
+      <td class="ticker-cell">${p.symbol}${isCurrent ? " <span class='muted-inline'>(current)</span>" : ""}</td>
+      <td>${p.longName || "--"}</td>
+      <td${p.trailingPE == null ? ' class="empty"' : ""}>${fmtMetric.ratio(p.trailingPE) || "--"}</td>
+      <td${p.evToEbitda == null ? ' class="empty"' : ""}>${fmtMetric.ratio(p.evToEbitda) || "--"}</td>
+      <td${p.revenueGrowth == null ? ' class="empty"' : ""}>${fmtMetric.pct(p.revenueGrowth, 1) || "--"}</td>
+      <td${p.grossMargin == null ? ' class="empty"' : ""}>${fmtMetric.pct(p.grossMargin, 1) || "--"}</td>
+      <td${p.roe == null ? ' class="empty"' : ""}>${fmtMetric.pct(p.roe, 1) || "--"}</td>
+    </tr>`;
+  }).join("");
+}
+
+// ── Wiring ────────────────────────────────────────────────────────────────────
 
 document.getElementById("refresh-data")?.addEventListener("click", refreshDashboard);
 document.getElementById("dismiss-warning")?.addEventListener("click", () => {
@@ -370,5 +998,55 @@ document.getElementById("dismiss-warning")?.addEventListener("click", () => {
   if (el) el.hidden = true;
 });
 
+document.getElementById("ticker-select")?.addEventListener("change", (e) => {
+  const v = e.target.value;
+  if (v) {
+    document.getElementById("ticker-input").value = v;
+    loadTicker(v, currentSnapshot);
+  }
+});
+
+document.getElementById("stock-search-form")?.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const v = (document.getElementById("ticker-input")?.value || "").trim().toUpperCase();
+  if (v) loadTicker(v, currentSnapshot);
+});
+
+// 5-minute auto-refresh interval (Feature: live-refresh)
+const FIVE_MIN_MS = 5 * 60 * 1000;
+setInterval(async () => {
+  console.log("Auto-refresh tick");
+  await refreshMarketOverviewQuotes();
+  if (currentTicker) {
+    // Re-render the header with a fresh live quote
+    try {
+      const liveQuote = await fetchYahooFinance(currentTicker);
+      const tickerData = currentSnapshot?.tickers?.[currentTicker];
+      renderStockHeader(currentTicker, tickerData?.fundamentals, liveQuote);
+    } catch (e) {
+      console.warn(`Auto-refresh ${currentTicker}:`, e.message);
+    }
+  }
+  updateTimestamp("auto-refresh");
+}, FIVE_MIN_MS);
+
 // Auto-load on page open
-refreshDashboard();
+(async function init() {
+  await refreshDashboard();
+
+  // Load the snapshot once for the new sections (refreshDashboard already loaded it but didn't return it)
+  currentSnapshot = await tryLoadSnapshot();
+
+  await renderMarketOverview(currentSnapshot);
+
+  // Default ticker = first popular
+  const select = document.getElementById("ticker-select");
+  if (select) {
+    select.value = "AAPL";
+    document.getElementById("ticker-input").value = "AAPL";
+    await loadTicker("AAPL", currentSnapshot);
+  }
+
+  // Refresh Market Overview live quotes once at start
+  refreshMarketOverviewQuotes().catch(() => {});
+})();
