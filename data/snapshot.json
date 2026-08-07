@@ -1,73 +1,71 @@
 {
-  "updated": "2026-08-05T16:15:40.503Z",
+  "updated": "2026-08-07T15:26:33.697Z",
   "stocks": {
     "sp500": {
-      "value": 7726.83984375,
-      "date": "2026-08-05",
-      "prev": 7736.52001953125,
-      "prevDate": "2026-08-04"
+      "value": 7762.080078125,
+      "date": "2026-08-07",
+      "prev": 7709.9599609375,
+      "prevDate": "2026-08-06"
     },
     "dow": {
-      "value": 54488.9609375,
-      "date": "2026-08-05",
-      "prev": 54085.87890625,
-      "prevDate": "2026-08-04"
+      "value": 54024.828125,
+      "date": "2026-08-07",
+      "prev": 53885.1015625,
+      "prevDate": "2026-08-06"
     },
     "nasdaq": {
-      "value": 26416.5078125,
-      "date": "2026-08-05",
-      "prev": 26584.990234375,
-      "prevDate": "2026-08-04"
+      "value": 26692.052734375,
+      "date": "2026-08-07",
+      "prev": 26348.349609375,
+      "prevDate": "2026-08-06"
     },
     "nasdaq100": {
-      "value": 29597.47265625,
-      "date": "2026-08-05",
-      "prev": 29733.16015625,
-      "prevDate": "2026-08-04"
+      "value": 29708.47265625,
+      "date": "2026-08-07",
+      "prev": 29373.330078125,
+      "prevDate": "2026-08-06"
     },
     "russell2000": {
-      "value": 3023.24365234375,
-      "date": "2026-08-05",
-      "prev": 3036.97998046875,
-      "prevDate": "2026-08-04"
+      "value": 3026.711669921875,
+      "date": "2026-08-07",
+      "prev": 3001.550048828125,
+      "prevDate": "2026-08-06"
     },
     "vix": {
-      "value": 16.229999542236328,
-      "date": "2026-08-05",
-      "prev": 16.5,
-      "prevDate": "2026-08-04"
+      "value": 14.949999809265137,
+      "date": "2026-08-07",
+      "prev": 15.149999618530273,
+      "prevDate": "2026-08-06"
     },
     "qqq": {
-      "value": 719.9500122070312,
-      "date": "2026-08-05",
-      "prev": 723.8499755859375,
-      "prevDate": "2026-08-04"
+      "value": 722.6300048828125,
+      "date": "2026-08-07",
+      "prev": 714.6500244140625,
+      "prevDate": "2026-08-06"
     },
     "xlc": {
-      "value": 110.1050033569336,
-      "date": "2026-08-05",
-      "prev": 112.04000091552734,
-      "prevDate": "2026-08-04"
+      "value": 111.52999877929688,
+      "date": "2026-08-07",
+      "prev": 111.18000030517578,
+      "prevDate": "2026-08-06"
     },
     "botz": {
-      "value": 37.32500076293945,
-      "date": "2026-08-05",
-      "prev": 37.09000015258789,
-      "prevDate": "2026-08-04"
+      "value": 37.625,
+      "date": "2026-08-07",
+      "prev": 36.939998626708984,
+      "prevDate": "2026-08-06"
     }
   },
   "fred": {},
   "fx": {
     "eurusd": {
-      "value": 1.1554,
-      "date": "2026-08-05"
+      "value": 1.1535,
+      "date": "2026-08-07"
     }
   },
   "indexHistory": {
     "^GSPC": {
       "dates": [
-        "2025-08-05",
-        "2025-08-06",
         "2025-08-07",
         "2025-08-08",
         "2025-08-11",
@@ -317,11 +315,11 @@
         "2026-07-31",
         "2026-08-03",
         "2026-08-04",
-        "2026-08-05"
+        "2026-08-05",
+        "2026-08-06",
+        "2026-08-07"
       ],
       "closes": [
-        6299.1899,
-        6345.0601,
         6340,
         6389.4502,
         6373.4502,
@@ -571,11 +569,11 @@
         7489.7202,
         7600.5,
         7736.52,
-        7733.5801
+        7723.5498,
+        7709.96,
+        7762.2402
       ],
       "volumes": [
-        5517410000,
-        5408560000,
         5306090000,
         4769910000,
         4652400000,
@@ -825,13 +823,13 @@
         5391020000,
         5201470000,
         5906940000,
-        1294080000
+        5615640000,
+        5330830000,
+        919986279
       ]
     },
     "^NDX": {
       "dates": [
-        "2025-08-05",
-        "2025-08-06",
         "2025-08-07",
         "2025-08-08",
         "2025-08-11",
@@ -1081,11 +1079,11 @@
         "2026-07-31",
         "2026-08-03",
         "2026-08-04",
-        "2026-08-05"
+        "2026-08-05",
+        "2026-08-06",
+        "2026-08-07"
       ],
       "closes": [
-        23018.5605,
-        23315.0391,
         23389.5293,
         23611.2695,
         23526.6309,
@@ -1335,11 +1333,11 @@
         28274.1992,
         28776.8008,
         29733.1602,
-        29632.5664
+        29487.7891,
+        29373.3301,
+        29731.1875
       ],
       "volumes": [
-        7982940000,
-        8580020000,
         8979190000,
         8669200000,
         9099730000,
@@ -1589,13 +1587,13 @@
         11942500000,
         11118460000,
         9717920000,
-        692330900
+        9116070000,
+        8936850000,
+        552598894
       ]
     },
     "^DJI": {
       "dates": [
-        "2025-08-05",
-        "2025-08-06",
         "2025-08-07",
         "2025-08-08",
         "2025-08-11",
@@ -1845,11 +1843,11 @@
         "2026-07-31",
         "2026-08-03",
         "2026-08-04",
-        "2026-08-05"
+        "2026-08-05",
+        "2026-08-06",
+        "2026-08-07"
       ],
       "closes": [
-        44111.7383,
-        44193.1211,
         43968.6406,
         44175.6094,
         43975.0898,
@@ -2099,11 +2097,11 @@
         52485.0313,
         53178.4102,
         54085.8789,
-        54520.1016
+        54349.1211,
+        53885.1016,
+        54001.3789
       ],
       "volumes": [
-        455690000,
-        518970000,
         492480000,
         452500000,
         431510000,
@@ -2353,13 +2351,13 @@
         697510000,
         598420000,
         580350000,
-        238822151
+        519020000,
+        416810000,
+        126675920
       ]
     },
     "^RUT": {
       "dates": [
-        "2025-08-05",
-        "2025-08-06",
         "2025-08-07",
         "2025-08-08",
         "2025-08-11",
@@ -2609,11 +2607,11 @@
         "2026-07-31",
         "2026-08-03",
         "2026-08-04",
-        "2026-08-05"
+        "2026-08-05",
+        "2026-08-06",
+        "2026-08-07"
       ],
       "closes": [
-        2225.6699,
-        2221.29,
         2214.72,
         2218.4199,
         2216.51,
@@ -2863,11 +2861,11 @@
         2931.3401,
         2981.9099,
         3036.98,
-        3024.0906
+        3019.1899,
+        3001.55,
+        3027.2629
       ],
       "volumes": [
-        5517410000,
-        5408560000,
         5306090000,
         4769910000,
         4652400000,
@@ -3117,13 +3115,13 @@
         5391020000,
         5201470000,
         5906940000,
+        5615640000,
+        5330830000,
         0
       ]
     },
     "^VIX": {
       "dates": [
-        "2025-08-05",
-        "2025-08-06",
         "2025-08-07",
         "2025-08-08",
         "2025-08-11",
@@ -3374,11 +3372,11 @@
         "2026-07-31",
         "2026-08-03",
         "2026-08-04",
-        "2026-08-05"
+        "2026-08-05",
+        "2026-08-06",
+        "2026-08-07"
       ],
       "closes": [
-        17.85,
-        16.77,
         16.57,
         15.15,
         16.25,
@@ -3629,7 +3627,9 @@
         15.99,
         15.86,
         16.5,
-        16.2
+        15.81,
+        15.15,
+        14.96
       ],
       "volumes": [
         0,
@@ -3893,8 +3893,6 @@
       "symbol": "AAPL",
       "history": {
         "dates": [
-          "2025-08-05",
-          "2025-08-06",
           "2025-08-07",
           "2025-08-08",
           "2025-08-11",
@@ -4144,11 +4142,11 @@
           "2026-07-31",
           "2026-08-03",
           "2026-08-04",
-          "2026-08-05"
+          "2026-08-05",
+          "2026-08-06",
+          "2026-08-07"
         ],
         "closes": [
-          202.92,
-          213.25,
           220.03,
           229.35,
           227.18,
@@ -4398,11 +4396,11 @@
           308.91,
           303.42,
           309.38,
-          308.98
+          311,
+          312.41,
+          313.175
         ],
         "volumes": [
-          44155100,
-          108483100,
           90224800,
           113854000,
           61806100,
@@ -4651,8 +4649,10 @@
           74817800,
           132489100,
           75052000,
-          67882600,
-          21500692
+          68001000,
+          49438800,
+          46076800,
+          11448030
         ]
       },
       "fundamentals": {
@@ -4666,18 +4666,18 @@
           "industry": "Consumer Electronics"
         },
         "quote": {
-          "price": 308.98,
-          "marketCap": 4509309861888,
+          "price": 313.192,
+          "marketCap": 4570780008448,
           "fiftyTwoWeekHigh": 344.57,
-          "fiftyTwoWeekLow": 205.59
+          "fiftyTwoWeekLow": 219.25
         },
         "valuation": {
-          "trailingPE": 36.095795,
-          "forwardPE": 32.479527,
-          "evToEbitda": 26.495,
-          "priceToSales": 9.659571,
-          "priceToBook": 41.98098,
-          "pegRatio": 2.46
+          "trailingPE": 35.91651,
+          "forwardPE": 32.922283,
+          "evToEbitda": 27.276,
+          "priceToSales": 9.791248,
+          "priceToBook": 42.553257,
+          "pegRatio": 2.52
         },
         "income": {
           "revenueTTM": 466822987776,
@@ -4686,7 +4686,7 @@
           "ebitdaMargin": 0.35979,
           "profitMargin": 0.27618998,
           "netIncome": null,
-          "epsTrailing": 8.56,
+          "epsTrailing": 8.72,
           "epsForward": 9.51307
         },
         "balance": {
@@ -4699,7 +4699,7 @@
           "freeCashflow": 107721875456,
           "capex": null,
           "operatingCashflow": 146723995648,
-          "fcfYield": 0.023888772063869215
+          "fcfYield": 0.023567503852056262
         },
         "returns": {
           "roe": 1.4875101,
@@ -4708,8 +4708,8 @@
         },
         "analyst": {
           "recommendationKey": "buy",
-          "recommendationMean": 2.06522,
-          "targetMean": 324.01367,
+          "recommendationMean": 2.08696,
+          "targetMean": 322.81854,
           "targetHigh": 400,
           "targetLow": 215,
           "numberOfAnalysts": 41
@@ -4764,40 +4764,40 @@
       },
       "news": [
         {
-          "title": "SpaceX’s $1T Goal and 3 More Shockers From Musk on the Earnings Call",
-          "publisher": "Barrons.com",
-          "link": "https://finance.yahoo.com/m/954539eb-42ed-35a5-bc45-3f6a2bec5755/spacex%E2%80%99s-%241t-goal-and-3-more.html",
-          "publishedAt": "2026-08-05T15:28:00.000Z"
-        },
-        {
-          "title": "The 9th Circuit’s Browser Analogy Leaves a Liability Vacuum",
-          "publisher": "Forkast News",
-          "link": "https://finance.yahoo.com/technology/ai/articles/9th-circuit-browser-analogy-leaves-142824841.html",
-          "publishedAt": "2026-08-05T14:28:24.000Z"
-        },
-        {
-          "title": "Departing Apple CEO Tim Cook Just Gave Memory Stocks Good News",
-          "publisher": "Motley Fool",
-          "link": "https://finance.yahoo.com/m/10697a22-14db-3cc8-a817-2395f0a3ea67/departing-apple-ceo-tim-cook.html",
-          "publishedAt": "2026-08-05T14:20:00.000Z"
-        },
-        {
-          "title": "Apple's Buyback Is Retiring Less Stock Just As The Memory Bill Grows",
+          "title": "Microsoft Stock's Peak Margin And Its Azure Bill Are The Same Story",
           "publisher": "Trefis",
-          "link": "https://finance.yahoo.com/m/2d1ddebb-f90b-3a3d-9c4e-e00285a80ff1/apple%27s-buyback-is-retiring.html",
-          "publishedAt": "2026-08-05T14:17:01.000Z"
+          "link": "https://finance.yahoo.com/m/b83fdc1a-4612-3c32-9eaf-449b151651b4/microsoft-stock%27s-peak-margin.html",
+          "publishedAt": "2026-08-07T15:07:21.000Z"
         },
         {
-          "title": "Apple’s purchase commitments jump 28%; BofA sees iPhone ramp ahead",
-          "publisher": "Investing.com",
-          "link": "https://finance.yahoo.com/markets/stocks/articles/apple-purchase-commitments-jump-28-134506846.html",
-          "publishedAt": "2026-08-05T13:45:06.000Z"
+          "title": "MP Earnings Show Chinese Rare-Earth Monopoly Is Fading. The Stock Is Up.",
+          "publisher": "Barrons.com",
+          "link": "https://finance.yahoo.com/m/49f884c2-1522-38ee-81b6-226112e1c1b6/mp-earnings-show-chinese.html",
+          "publishedAt": "2026-08-07T14:15:00.000Z"
         },
         {
-          "title": "Kurv Launches the Kurv Equity Option Income ETF (KEO), Designed to Provide Diversified Exposure with Weekly Income Potential",
-          "publisher": "Business Wire",
-          "link": "https://finance.yahoo.com/markets/options/articles/kurv-launches-kurv-equity-option-130000825.html",
-          "publishedAt": "2026-08-05T13:00:00.000Z"
+          "title": "What we know about OpenAI's upcoming handheld device: Bloomberg",
+          "publisher": "Yahoo Finance Video",
+          "link": "https://finance.yahoo.com/video/know-openais-upcoming-handheld-device-140247594.html",
+          "publishedAt": "2026-08-07T14:02:47.000Z"
+        },
+        {
+          "title": "Warren Buffett Said If He Was a ‘Handy’ Investor, He’d Buy Fixer-Uppers With a 30-Year Mortgage and Rent Them Out — ‘It’s a Way…to Short the Dollar’",
+          "publisher": "Benzinga",
+          "link": "https://finance.yahoo.com/real-estate/articles/warren-buffett-said-handy-investor-140023983.html",
+          "publishedAt": "2026-08-07T14:00:23.000Z"
+        },
+        {
+          "title": "Apple Stock Surged On An Upgrade Cycle Its Own Reports Flagged Early",
+          "publisher": "Trefis",
+          "link": "https://finance.yahoo.com/m/8ac7eb54-01c0-39ce-a7ad-1cea00500162/apple-stock-surged-on-an.html",
+          "publishedAt": "2026-08-07T13:43:42.000Z"
+        },
+        {
+          "title": "Apple Among Three Stocks In Voracious Demand. Funds Also Feast On 14 Others.",
+          "publisher": "Investor's Business Daily",
+          "link": "https://finance.yahoo.com/m/7e310c90-76c1-3769-96ef-87693459878e/apple-among-three-stocks-in.html",
+          "publishedAt": "2026-08-07T11:00:05.000Z"
         }
       ]
     },
@@ -4805,8 +4805,6 @@
       "symbol": "MSFT",
       "history": {
         "dates": [
-          "2025-08-05",
-          "2025-08-06",
           "2025-08-07",
           "2025-08-08",
           "2025-08-11",
@@ -5056,11 +5054,11 @@
           "2026-07-31",
           "2026-08-03",
           "2026-08-04",
-          "2026-08-05"
+          "2026-08-05",
+          "2026-08-06",
+          "2026-08-07"
         ],
         "closes": [
-          527.75,
-          524.94,
           520.84,
           522.04,
           521.77,
@@ -5310,11 +5308,11 @@
           464.72,
           487.65,
           492.81,
-          488.4845
+          487.46,
+          499.86,
+          502.33
         ],
         "volumes": [
-          19171600,
-          21355700,
           16079100,
           15531000,
           20194400,
@@ -5563,8 +5561,10 @@
           110160700,
           60846000,
           66762100,
-          50258300,
-          14948391
+          50455500,
+          33388900,
+          36397900,
+          9366557
         ]
       },
       "fundamentals": {
@@ -5578,17 +5578,17 @@
           "industry": "Software - Infrastructure"
         },
         "quote": {
-          "price": 488.405,
-          "marketCap": 3626673635328,
+          "price": 502.33,
+          "marketCap": 3730074238976,
           "fiftyTwoWeekHigh": 553.72,
           "fiftyTwoWeekLow": 349.2
         },
         "valuation": {
-          "trailingPE": 27.224358,
-          "forwardPE": 20.810865,
-          "evToEbitda": 18.911,
-          "priceToSales": 10.929015,
-          "priceToBook": 8.19953,
+          "trailingPE": 28.000555,
+          "forwardPE": 21.404207,
+          "evToEbitda": 19.377,
+          "priceToSales": 11.240614,
+          "priceToBook": 8.433308,
           "pegRatio": 1.59
         },
         "income": {
@@ -5602,16 +5602,16 @@
           "epsForward": 23.46875
         },
         "balance": {
-          "totalCash": 76651003904,
+          "totalCash": 76842999808,
           "totalDebt": 128812998656,
-          "netDebt": 52161994752,
+          "netDebt": 51969998848,
           "debtToEquity": 29.118
         },
         "cashflow": {
-          "freeCashflow": 16363499520,
+          "freeCashflow": 16545500160,
           "capex": null,
           "operatingCashflow": 182934994944,
-          "fcfYield": 0.004511985683134145
+          "fcfYield": 0.004435702642889531
         },
         "returns": {
           "roe": 0.34039003,
@@ -5621,7 +5621,7 @@
         "analyst": {
           "recommendationKey": "strong_buy",
           "recommendationMean": 1.35714,
-          "targetMean": 562.72644,
+          "targetMean": 563.34906,
           "targetHigh": 870,
           "targetLow": 400,
           "numberOfAnalysts": 53
@@ -5676,40 +5676,40 @@
       },
       "news": [
         {
-          "title": "What’s the ‘Ceiling’ on How Much Microsoft, Amazon, and Google Can Spend on AI?",
-          "publisher": "24/7 Wall St.",
-          "link": "https://finance.yahoo.com/m/d1ea3c90-b737-3a65-a153-31dbaed00aea/what%E2%80%99s-the-%E2%80%98ceiling%E2%80%99-on-how.html",
-          "publishedAt": "2026-08-05T16:01:28.000Z"
+          "title": "Microsoft, Amazon, Meta, Google Are 'Collectively Overinvesting' In AI: 'That's Betting, Not Investing,' Says 'Dean of Valuation'",
+          "publisher": "Benzinga Prediction Markets",
+          "link": "https://finance.yahoo.com/m/583dbafd-913c-3639-ba90-8ebb02e5aa1e/microsoft%2C-amazon%2C-meta%2C.html",
+          "publishedAt": "2026-08-07T15:21:38.000Z"
         },
         {
-          "title": "AMD’s Data Center Business Doubled and Our Price Target Shows Why",
-          "publisher": "24/7 Wall St.",
-          "link": "https://finance.yahoo.com/m/03c37c65-c50c-379e-adbc-26d9a8a1ecdd/amd%E2%80%99s-data-center-business.html",
-          "publishedAt": "2026-08-05T16:00:59.000Z"
+          "title": "Billionaire Bill Ackman Has 15% of Pershing Square's Portfolio in a $2.4 Billion Microsoft Stake. Is It Still a Buy After the Rally?",
+          "publisher": "Motley Fool",
+          "link": "https://finance.yahoo.com/m/3e07efc6-9176-3537-8f0b-3d57417f01c0/billionaire-bill-ackman-has.html",
+          "publishedAt": "2026-08-07T15:08:00.000Z"
         },
         {
-          "title": "Shopify Earnings Flip the Script on AI Fears",
-          "publisher": "Barrons.com",
-          "link": "https://finance.yahoo.com/m/d40604ed-b739-33dc-93ea-b300664d224b/shopify-earnings-flip-the.html",
-          "publishedAt": "2026-08-05T15:52:00.000Z"
-        },
-        {
-          "title": "The Biggest Risk To Meta Platforms Stock Is A Bill Without A Payback Date",
+          "title": "Microsoft Stock's Peak Margin And Its Azure Bill Are The Same Story",
           "publisher": "Trefis",
-          "link": "https://finance.yahoo.com/m/4d5a6dbd-6799-3956-a761-51c4ee1424d4/the-biggest-risk-to-meta.html",
-          "publishedAt": "2026-08-05T15:38:42.000Z"
+          "link": "https://finance.yahoo.com/m/b83fdc1a-4612-3c32-9eaf-449b151651b4/microsoft-stock%27s-peak-margin.html",
+          "publishedAt": "2026-08-07T15:07:21.000Z"
         },
         {
-          "title": "Palantir Is Signing Work Faster Than It Can Bill It",
+          "title": "Atlassian stock soars 34% after earnings boost: AlphaSpace chart analysis",
+          "publisher": "Yahoo Finance Video",
+          "link": "https://finance.yahoo.com/video/atlassian-stock-soars-34-earnings-145957235.html",
+          "publishedAt": "2026-08-07T14:59:57.000Z"
+        },
+        {
+          "title": "Oracle Stock Fell While Its Operating Margin Climbed For A Third Straight Year",
           "publisher": "Trefis",
-          "link": "https://finance.yahoo.com/m/a9b9f2aa-ac4b-3ceb-95c5-51f62af0d17f/palantir-is-signing-work.html",
-          "publishedAt": "2026-08-05T15:11:15.000Z"
+          "link": "https://finance.yahoo.com/m/68d30185-7e4e-36d5-a17d-162ebacd6a18/oracle-stock-fell-while-its.html",
+          "publishedAt": "2026-08-07T14:51:44.000Z"
         },
         {
-          "title": "SpaceX Has Already Lost AI Race",
-          "publisher": "24/7 Wall St.",
-          "link": "https://finance.yahoo.com/m/291c17e4-b129-38fe-8cf0-ae088b084cf9/spacex-has-already-lost-ai.html",
-          "publishedAt": "2026-08-05T14:53:54.000Z"
+          "title": "While everyone chases Nvidia, Caterpillar just showed where AI money goes next",
+          "publisher": "TheStreet",
+          "link": "https://finance.yahoo.com/m/155e36e0-25e1-3c45-88f5-9c862f3afd0d/while-everyone-chases-nvidia%2C.html",
+          "publishedAt": "2026-08-07T14:07:00.000Z"
         }
       ]
     },
@@ -5717,8 +5717,6 @@
       "symbol": "GOOGL",
       "history": {
         "dates": [
-          "2025-08-05",
-          "2025-08-06",
           "2025-08-07",
           "2025-08-08",
           "2025-08-11",
@@ -5968,11 +5966,11 @@
           "2026-07-31",
           "2026-08-03",
           "2026-08-04",
-          "2026-08-05"
+          "2026-08-05",
+          "2026-08-06",
+          "2026-08-07"
         ],
         "closes": [
-          194.67,
-          196.09,
           196.52,
           201.42,
           201,
@@ -6222,11 +6220,11 @@
           356.13,
           373.51,
           377.65,
-          363.7601
+          362.43,
+          357.75,
+          356.94
         ],
         "volumes": [
-          31602300,
-          21562900,
           26321800,
           39161800,
           25832400,
@@ -6475,8 +6473,10 @@
           30168000,
           46498000,
           38669700,
-          35649100,
-          21967171
+          35705700,
+          46926300,
+          25186500,
+          8505059
         ]
       },
       "fundamentals": {
@@ -6490,18 +6490,18 @@
           "industry": "Internet Content & Information"
         },
         "quote": {
-          "price": 363.813,
-          "marketCap": 4449409433600,
+          "price": 356.94,
+          "marketCap": 4365352960000,
           "fiftyTwoWeekHigh": 408.61,
-          "fiftyTwoWeekLow": 193.67
+          "fiftyTwoWeekLow": 196.6
         },
         "valuation": {
-          "trailingPE": 18.245384,
-          "forwardPE": 24.69135,
-          "evToEbitda": 25.781,
-          "priceToSales": 9.979253,
-          "priceToBook": 7.1481647,
-          "pegRatio": 0.97
+          "trailingPE": 17.909683,
+          "forwardPE": 24.224894,
+          "evToEbitda": 24.668,
+          "priceToSales": 9.790729,
+          "priceToBook": 7.013125,
+          "pegRatio": 0.98
         },
         "income": {
           "revenueTTM": 445865984000,
@@ -6510,7 +6510,7 @@
           "ebitdaMargin": 0.38838002,
           "profitMargin": 0.54771,
           "netIncome": null,
-          "epsTrailing": 19.94,
+          "epsTrailing": 19.93,
           "epsForward": 14.73443
         },
         "balance": {
@@ -6523,7 +6523,7 @@
           "freeCashflow": 22665000960,
           "capex": null,
           "operatingCashflow": 185675005952,
-          "fcfYield": 0.005093934666664703
+          "fcfYield": 0.005192020248461192
         },
         "returns": {
           "roe": 0.48676,
@@ -6588,40 +6588,40 @@
       },
       "news": [
         {
-          "title": "What’s the ‘Ceiling’ on How Much Microsoft, Amazon, and Google Can Spend on AI?",
-          "publisher": "24/7 Wall St.",
-          "link": "https://finance.yahoo.com/m/d1ea3c90-b737-3a65-a153-31dbaed00aea/what%E2%80%99s-the-%E2%80%98ceiling%E2%80%99-on-how.html",
-          "publishedAt": "2026-08-05T16:01:28.000Z"
+          "title": "Alphabet Taps the Bond Market Again for Up to $25 Billion",
+          "publisher": "GuruFocus.com",
+          "link": "https://finance.yahoo.com/news/alphabet-taps-bond-market-again-153030870.html",
+          "publishedAt": "2026-08-07T15:30:30.000Z"
         },
         {
-          "title": "Shopify Earnings Flip the Script on AI Fears",
-          "publisher": "Barrons.com",
-          "link": "https://finance.yahoo.com/m/d40604ed-b739-33dc-93ea-b300664d224b/shopify-earnings-flip-the.html",
-          "publishedAt": "2026-08-05T15:52:00.000Z"
+          "title": "Microsoft, Amazon, Meta, Google Are 'Collectively Overinvesting' In AI: 'That's Betting, Not Investing,' Says 'Dean of Valuation'",
+          "publisher": "Benzinga Prediction Markets",
+          "link": "https://finance.yahoo.com/m/583dbafd-913c-3639-ba90-8ebb02e5aa1e/microsoft%2C-amazon%2C-meta%2C.html",
+          "publishedAt": "2026-08-07T15:21:38.000Z"
         },
         {
-          "title": "Major Hedge Funds Targeted in Wave of Attempted Cyberattacks",
-          "publisher": "Bloomberg",
-          "link": "https://finance.yahoo.com/technology/ai/articles/major-hedge-funds-targeted-wave-154044981.html",
-          "publishedAt": "2026-08-05T15:40:44.000Z"
+          "title": "Etsy's Workforce Reduction May Help Sustain Gross Merchandise Sales Uptrend, Wedbush Says",
+          "publisher": "MT Newswires",
+          "link": "https://finance.yahoo.com/markets/stocks/articles/etsy-apos-workforce-reduction-may-151501248.html",
+          "publishedAt": "2026-08-07T15:15:01.000Z"
         },
         {
-          "title": "The Biggest Risk To Meta Platforms Stock Is A Bill Without A Payback Date",
+          "title": "Microsoft Stock's Peak Margin And Its Azure Bill Are The Same Story",
           "publisher": "Trefis",
-          "link": "https://finance.yahoo.com/m/4d5a6dbd-6799-3956-a761-51c4ee1424d4/the-biggest-risk-to-meta.html",
-          "publishedAt": "2026-08-05T15:38:42.000Z"
+          "link": "https://finance.yahoo.com/m/b83fdc1a-4612-3c32-9eaf-449b151651b4/microsoft-stock%27s-peak-margin.html",
+          "publishedAt": "2026-08-07T15:07:21.000Z"
         },
         {
-          "title": "Google Retires Assistant On Android As Gemini Shifts Ad Landscape",
-          "publisher": "MediaPost",
-          "link": "https://finance.yahoo.com/m/c83f8433-cf0b-31bb-8056-d216b4276032/google-retires-assistant-on.html",
-          "publishedAt": "2026-08-05T15:32:54.000Z"
+          "title": "Oracle Stock Fell While Its Operating Margin Climbed For A Third Straight Year",
+          "publisher": "Trefis",
+          "link": "https://finance.yahoo.com/m/68d30185-7e4e-36d5-a17d-162ebacd6a18/oracle-stock-fell-while-its.html",
+          "publishedAt": "2026-08-07T14:51:44.000Z"
         },
         {
-          "title": "SpaceX’s $1T Goal and 3 More Shockers From Musk on the Earnings Call",
-          "publisher": "Barrons.com",
-          "link": "https://finance.yahoo.com/m/954539eb-42ed-35a5-bc45-3f6a2bec5755/spacex%E2%80%99s-%241t-goal-and-3-more.html",
-          "publishedAt": "2026-08-05T15:28:00.000Z"
+          "title": "Alphabet Is Borrowing $25 Billion to Keep the AI Buildout Going",
+          "publisher": "GuruFocus.com",
+          "link": "https://finance.yahoo.com/technology/ai/articles/alphabet-borrowing-25-billion-keep-145110629.html",
+          "publishedAt": "2026-08-07T14:51:10.000Z"
         }
       ]
     },
@@ -6629,8 +6629,6 @@
       "symbol": "AMZN",
       "history": {
         "dates": [
-          "2025-08-05",
-          "2025-08-06",
           "2025-08-07",
           "2025-08-08",
           "2025-08-11",
@@ -6880,11 +6878,11 @@
           "2026-07-31",
           "2026-08-03",
           "2026-08-04",
-          "2026-08-05"
+          "2026-08-05",
+          "2026-08-06",
+          "2026-08-07"
         ],
         "closes": [
-          213.75,
-          222.31,
           223.13,
           222.69,
           221.3,
@@ -7134,11 +7132,11 @@
           271.58,
           284.02,
           277.42,
-          272.535
+          272.65,
+          272.26,
+          278.225
         ],
         "volumes": [
-          51505100,
-          54823000,
           40603500,
           32970500,
           31646200,
@@ -7387,8 +7385,10 @@
           101839800,
           129054800,
           90830200,
-          69646900,
-          19449947
+          69748100,
+          45119800,
+          30627000,
+          12108563
         ]
       },
       "fundamentals": {
@@ -7402,18 +7402,18 @@
           "industry": "Internet Retail"
         },
         "quote": {
-          "price": 272.55,
-          "marketCap": 2939809431552,
+          "price": 278.225,
+          "marketCap": 3001022152704,
           "fiftyTwoWeekHigh": 287.2,
           "fiftyTwoWeekLow": 196
         },
         "valuation": {
-          "trailingPE": 21.926788,
-          "forwardPE": 26.387,
-          "evToEbitda": 18.898,
-          "priceToSales": 3.7899768,
-          "priceToBook": 5.327821,
-          "pegRatio": 1.46
+          "trailingPE": 22.365355,
+          "forwardPE": 26.936426,
+          "evToEbitda": 18.147,
+          "priceToSales": 3.868892,
+          "priceToBook": 5.4387565,
+          "pegRatio": 1.45
         },
         "income": {
           "revenueTTM": 775680032768,
@@ -7422,7 +7422,7 @@
           "ebitdaMargin": 0.21776,
           "profitMargin": 0.1744,
           "netIncome": null,
-          "epsTrailing": 12.43,
+          "epsTrailing": 12.44,
           "epsForward": 10.32895
         },
         "balance": {
@@ -7435,7 +7435,7 @@
           "freeCashflow": 3219124992,
           "capex": null,
           "operatingCashflow": 161402994688,
-          "fcfYield": 0.0010950114512356477
+          "fcfYield": 0.0010726761843792068
         },
         "returns": {
           "roe": 0.30558002,
@@ -7444,11 +7444,11 @@
         },
         "analyst": {
           "recommendationKey": "strong_buy",
-          "recommendationMean": 1.35484,
-          "targetMean": 323.29083,
+          "recommendationMean": 1.32787,
+          "targetMean": 325.81232,
           "targetHigh": 400,
-          "targetLow": 207,
-          "numberOfAnalysts": 61
+          "targetLow": 230,
+          "numberOfAnalysts": 60
         },
         "quarterly": {
           "dates": [
@@ -7500,40 +7500,40 @@
       },
       "news": [
         {
-          "title": "What’s the ‘Ceiling’ on How Much Microsoft, Amazon, and Google Can Spend on AI?",
-          "publisher": "24/7 Wall St.",
-          "link": "https://finance.yahoo.com/m/d1ea3c90-b737-3a65-a153-31dbaed00aea/what%E2%80%99s-the-%E2%80%98ceiling%E2%80%99-on-how.html",
-          "publishedAt": "2026-08-05T16:01:28.000Z"
+          "title": "Microsoft, Amazon, Meta, Google Are 'Collectively Overinvesting' In AI: 'That's Betting, Not Investing,' Says 'Dean of Valuation'",
+          "publisher": "Benzinga Prediction Markets",
+          "link": "https://finance.yahoo.com/m/583dbafd-913c-3639-ba90-8ebb02e5aa1e/microsoft%2C-amazon%2C-meta%2C.html",
+          "publishedAt": "2026-08-07T15:21:38.000Z"
         },
         {
-          "title": "The Biggest Risk To Meta Platforms Stock Is A Bill Without A Payback Date",
+          "title": "Microsoft Stock's Peak Margin And Its Azure Bill Are The Same Story",
           "publisher": "Trefis",
-          "link": "https://finance.yahoo.com/m/4d5a6dbd-6799-3956-a761-51c4ee1424d4/the-biggest-risk-to-meta.html",
-          "publishedAt": "2026-08-05T15:38:42.000Z"
+          "link": "https://finance.yahoo.com/m/b83fdc1a-4612-3c32-9eaf-449b151651b4/microsoft-stock%27s-peak-margin.html",
+          "publishedAt": "2026-08-07T15:07:21.000Z"
         },
         {
-          "title": "Palantir Is Signing Work Faster Than It Can Bill It",
+          "title": "Oracle Stock Fell While Its Operating Margin Climbed For A Third Straight Year",
           "publisher": "Trefis",
-          "link": "https://finance.yahoo.com/m/a9b9f2aa-ac4b-3ceb-95c5-51f62af0d17f/palantir-is-signing-work.html",
-          "publishedAt": "2026-08-05T15:11:15.000Z"
+          "link": "https://finance.yahoo.com/m/68d30185-7e4e-36d5-a17d-162ebacd6a18/oracle-stock-fell-while-its.html",
+          "publishedAt": "2026-08-07T14:51:44.000Z"
         },
         {
-          "title": "Zoox to start charging for robotaxi rides in Las Vegas",
-          "publisher": "TechCrunch",
-          "link": "https://finance.yahoo.com/technology/articles/zoox-start-charging-robotaxi-rides-150642211.html",
-          "publishedAt": "2026-08-05T15:06:42.000Z"
+          "title": "Alphabet Is Borrowing $25 Billion to Keep the AI Buildout Going",
+          "publisher": "GuruFocus.com",
+          "link": "https://finance.yahoo.com/technology/ai/articles/alphabet-borrowing-25-billion-keep-145110629.html",
+          "publishedAt": "2026-08-07T14:51:10.000Z"
         },
         {
-          "title": "Amazon's Zoox to start paid robotaxi rides in Vegas next week",
-          "publisher": "Reuters",
-          "link": "https://finance.yahoo.com/technology/articles/amazons-zoox-start-paid-robotaxi-150625162.html",
-          "publishedAt": "2026-08-05T15:06:25.000Z"
+          "title": "The Best Stock to Invest $1,000 in Right Now",
+          "publisher": "Motley Fool",
+          "link": "https://finance.yahoo.com/m/fd98e44e-149e-31de-8684-201f398e70c2/the-best-stock-to-invest.html",
+          "publishedAt": "2026-08-07T14:43:00.000Z"
         },
         {
-          "title": "SpaceX Has Already Lost AI Race",
-          "publisher": "24/7 Wall St.",
-          "link": "https://finance.yahoo.com/m/291c17e4-b129-38fe-8cf0-ae088b084cf9/spacex-has-already-lost-ai.html",
-          "publishedAt": "2026-08-05T14:53:54.000Z"
+          "title": "What Is a Monopsony—and Why Is New Jersey Suing Amazon Over It?",
+          "publisher": "Sourcing Journal",
+          "link": "https://finance.yahoo.com/m/72a805d7-78bd-32d1-86d2-0d3e933cb09b/what-is-a-monopsony%E2%80%94and-why.html",
+          "publishedAt": "2026-08-07T14:30:00.000Z"
         }
       ]
     },
@@ -7541,8 +7541,6 @@
       "symbol": "NVDA",
       "history": {
         "dates": [
-          "2025-08-05",
-          "2025-08-06",
           "2025-08-07",
           "2025-08-08",
           "2025-08-11",
@@ -7792,11 +7790,11 @@
           "2026-07-31",
           "2026-08-03",
           "2026-08-04",
-          "2026-08-05"
+          "2026-08-05",
+          "2026-08-06",
+          "2026-08-07"
         ],
         "closes": [
-          178.26,
-          179.42,
           180.77,
           182.7,
           182.06,
@@ -8046,11 +8044,11 @@
           200.75,
           206.64,
           211.94,
-          220.05
+          219.22,
+          218.99,
+          224.61
         ],
         "volumes": [
-          156407600,
-          137192300,
           151878400,
           123396700,
           138323200,
@@ -8299,8 +8297,10 @@
           129010200,
           139961200,
           128406900,
-          133610200,
-          83388203
+          134922000,
+          158187400,
+          113686000,
+          40519007
         ]
       },
       "fundamentals": {
@@ -8314,18 +8314,18 @@
           "industry": "Semiconductors"
         },
         "quote": {
-          "price": 220.055,
-          "marketCap": 5329951653888,
+          "price": 224.6,
+          "marketCap": 5440036929536,
           "fiftyTwoWeekHigh": 236.54,
           "fiftyTwoWeekLow": 164.07
         },
         "valuation": {
-          "trailingPE": 32.74628,
-          "forwardPE": 17.07119,
-          "evToEbitda": 30.744,
-          "priceToSales": 21.026197,
-          "priceToBook": 27.268278,
-          "pegRatio": 0.57
+          "trailingPE": 34.3951,
+          "forwardPE": 17.423779,
+          "evToEbitda": 31.775,
+          "priceToSales": 21.460474,
+          "priceToBook": 27.831476,
+          "pegRatio": 0.6
         },
         "income": {
           "revenueTTM": 253491003392,
@@ -8334,7 +8334,7 @@
           "ebitdaMargin": 0.65294,
           "profitMargin": 0.62966,
           "netIncome": null,
-          "epsTrailing": 6.72,
+          "epsTrailing": 6.53,
           "epsForward": 12.89043
         },
         "balance": {
@@ -8347,7 +8347,7 @@
           "freeCashflow": 46335873024,
           "capex": null,
           "operatingCashflow": 125648003072,
-          "fcfYield": 0.008693488427835874
+          "fcfYield": 0.008517565896000664
         },
         "returns": {
           "roe": 1.14288,
@@ -8412,40 +8412,40 @@
       },
       "news": [
         {
-          "title": "7 Dividend Stocks You Must Buy Immediately to Get Paid in August",
-          "publisher": "24/7 Wall St.",
-          "link": "https://finance.yahoo.com/m/818ae72c-2b8e-3cea-bd99-723670afbe10/7-dividend-stocks-you-must.html",
-          "publishedAt": "2026-08-05T16:13:00.000Z"
+          "title": "Billionaire Bill Ackman Has 15% of Pershing Square's Portfolio in a $2.4 Billion Microsoft Stake. Is It Still a Buy After the Rally?",
+          "publisher": "Motley Fool",
+          "link": "https://finance.yahoo.com/m/3e07efc6-9176-3537-8f0b-3d57417f01c0/billionaire-bill-ackman-has.html",
+          "publishedAt": "2026-08-07T15:08:00.000Z"
         },
         {
-          "title": "Stock Market Today: Dow Charges Higher In Mixed Trade; Disney Clears Key Level (Live Coverage)",
-          "publisher": "Investor's Business Daily",
-          "link": "https://finance.yahoo.com/m/df8bb7aa-2f8c-3068-aac6-ba6ee88129f0/stock-market-today%3A-dow.html",
-          "publishedAt": "2026-08-05T16:02:56.000Z"
+          "title": "Can't Classify It? Maybe It's a Rule Breaker Stock",
+          "publisher": "Motley Fool",
+          "link": "https://finance.yahoo.com/m/e4d45818-268f-3539-9bba-fb3f1cfb4f1a/can%27t-classify-it%3F-maybe-it%27s.html",
+          "publishedAt": "2026-08-07T15:05:00.000Z"
         },
         {
-          "title": "SpaceX, Nvidia, Micron, AMD, Uber, CVS, Lilly, and More Stocks That Explain Today’s Market",
-          "publisher": "Barrons.com",
-          "link": "https://finance.yahoo.com/m/a7670b0f-ed38-324c-8ef1-46c9a987c3cd/spacex%2C-nvidia%2C-micron%2C-amd%2C.html",
-          "publishedAt": "2026-08-05T16:02:00.000Z"
-        },
-        {
-          "title": "What’s the ‘Ceiling’ on How Much Microsoft, Amazon, and Google Can Spend on AI?",
-          "publisher": "24/7 Wall St.",
-          "link": "https://finance.yahoo.com/m/d1ea3c90-b737-3a65-a153-31dbaed00aea/what%E2%80%99s-the-%E2%80%98ceiling%E2%80%99-on-how.html",
-          "publishedAt": "2026-08-05T16:01:28.000Z"
-        },
-        {
-          "title": "AMD’s Data Center Business Doubled and Our Price Target Shows Why",
-          "publisher": "24/7 Wall St.",
-          "link": "https://finance.yahoo.com/m/03c37c65-c50c-379e-adbc-26d9a8a1ecdd/amd%E2%80%99s-data-center-business.html",
-          "publishedAt": "2026-08-05T16:00:59.000Z"
-        },
-        {
-          "title": "Top Midday Stories: SpaceX Shares Fall After Inaugural Results; AMD Drops Despite Strong Q2 EPS, Revenue",
+          "title": "Market Chatter: US Reviewing Chinese Firms' Offshore Access to Nvidia Chips",
           "publisher": "MT Newswires",
-          "link": "https://finance.yahoo.com/markets/stocks/articles/top-midday-stories-spacex-shares-155758915.html",
-          "publishedAt": "2026-08-05T15:57:58.000Z"
+          "link": "https://finance.yahoo.com/technology/ai/articles/market-chatter-us-reviewing-chinese-150429637.html",
+          "publishedAt": "2026-08-07T15:04:29.000Z"
+        },
+        {
+          "title": "Why Twilio Stock Rocketed Higher Today",
+          "publisher": "Motley Fool",
+          "link": "https://finance.yahoo.com/m/666a30dc-bcc6-31f3-a9df-5a2151c4d7b0/why-twilio-stock-rocketed.html",
+          "publishedAt": "2026-08-07T14:59:34.000Z"
+        },
+        {
+          "title": "Atlassian Soars 34%, Twilio Leaps 27%, Cloudflare Advances 9% in Software Stock Surge",
+          "publisher": "24/7 Wall St.",
+          "link": "https://finance.yahoo.com/m/26c0fb21-5544-3b08-aa3f-bfb7b0aa3eee/atlassian-soars-34%25%2C-twilio.html",
+          "publishedAt": "2026-08-07T14:54:26.000Z"
+        },
+        {
+          "title": "Why Sweetgreen Stock Tumbled Today",
+          "publisher": "Motley Fool",
+          "link": "https://finance.yahoo.com/m/ab32d67d-528f-3a31-a651-6cd962442e70/why-sweetgreen-stock-tumbled.html",
+          "publishedAt": "2026-08-07T14:51:18.000Z"
         }
       ]
     },
@@ -8453,8 +8453,6 @@
       "symbol": "TSLA",
       "history": {
         "dates": [
-          "2025-08-05",
-          "2025-08-06",
           "2025-08-07",
           "2025-08-08",
           "2025-08-11",
@@ -8704,11 +8702,11 @@
           "2026-07-31",
           "2026-08-03",
           "2026-08-04",
-          "2026-08-05"
+          "2026-08-05",
+          "2026-08-06",
+          "2026-08-07"
         ],
         "closes": [
-          308.72,
-          319.91,
           322.27,
           329.65,
           339.03,
@@ -8958,11 +8956,11 @@
           311.21,
           322.08,
           327.35,
-          323.04
+          321.55,
+          319.53,
+          333.135
         ],
         "volumes": [
-          57961300,
-          78523600,
           66658700,
           91200300,
           105320200,
@@ -9211,8 +9209,10 @@
           38005400,
           36630600,
           38281400,
-          33196800,
-          13314545
+          33318300,
+          27820800,
+          25965800,
+          18505253
         ]
       },
       "fundamentals": {
@@ -9226,18 +9226,18 @@
           "industry": "Auto Manufacturers"
         },
         "quote": {
-          "price": 323.04,
-          "marketCap": 1275861925888,
+          "price": 333.27,
+          "marketCap": 1316265656320,
           "fiftyTwoWeekHigh": 498.83,
           "fiftyTwoWeekLow": 297.38
         },
         "valuation": {
-          "trailingPE": 299.1111,
-          "forwardPE": 145.56401,
-          "evToEbitda": 115.787,
-          "priceToSales": 12.313011,
-          "priceToBook": 14.420786,
-          "pegRatio": 4.72
+          "trailingPE": 305.7523,
+          "forwardPE": 150.1737,
+          "evToEbitda": 114.85,
+          "priceToSales": 12.702937,
+          "priceToBook": 15.152079,
+          "pegRatio": 4.71
         },
         "income": {
           "revenueTTM": 103619002368,
@@ -9246,7 +9246,7 @@
           "ebitdaMargin": 0.10379,
           "profitMargin": 0.03671,
           "netIncome": null,
-          "epsTrailing": 1.08,
+          "epsTrailing": 1.09,
           "epsForward": 2.21923
         },
         "balance": {
@@ -9259,7 +9259,7 @@
           "freeCashflow": 4835999744,
           "capex": null,
           "operatingCashflow": 18684999680,
-          "fcfYield": 0.003790378602789752
+          "fcfYield": 0.003674030178315547
         },
         "returns": {
           "roe": 0.046669997,
@@ -9324,40 +9324,40 @@
       },
       "news": [
         {
-          "title": "SpaceX’s $1T Goal and 3 More Shockers From Musk on the Earnings Call",
+          "title": "Tesla Stock Rises to End Good Week. Thank the Usual Suspects.",
           "publisher": "Barrons.com",
-          "link": "https://finance.yahoo.com/m/954539eb-42ed-35a5-bc45-3f6a2bec5755/spacex%E2%80%99s-%241t-goal-and-3-more.html",
-          "publishedAt": "2026-08-05T15:28:00.000Z"
+          "link": "https://finance.yahoo.com/m/8bbb6bd3-b981-367d-8f0c-3925f06db1ce/tesla-stock-rises-to-end-good.html",
+          "publishedAt": "2026-08-07T14:29:00.000Z"
         },
         {
-          "title": "Tesla (TSLA) Q2 2026 Earnings Call Transcript",
-          "publisher": "Motley Fool",
-          "link": "https://finance.yahoo.com/m/d5a6bbef-972b-3e79-a9c8-dbf0032d2a3a/tesla-%28tsla%29-q2-2026-earnings.html",
-          "publishedAt": "2026-08-05T15:14:12.000Z"
+          "title": "SpaceX’s Terafab will rely on natural gas power plants, not Tesla solar panels",
+          "publisher": "TechCrunch",
+          "link": "https://finance.yahoo.com/energy/articles/spacex-terafab-rely-natural-gas-140731384.html",
+          "publishedAt": "2026-08-07T14:07:31.000Z"
         },
         {
-          "title": "Uber stock drops as bookings guidance disappoints; CEO bets on robotaxi push to grow overall business",
-          "publisher": "Yahoo Finance",
-          "link": "https://finance.yahoo.com/markets/stocks/article/uber-stock-drops-as-bookings-guidance-disappoints-ceo-bets-on-robotaxi-push-to-grow-overall-business-150729446.html",
-          "publishedAt": "2026-08-05T15:07:29.000Z"
+          "title": "The New Wild West: Texas Experiments With Raw Capitalism",
+          "publisher": "Barrons.com",
+          "link": "https://finance.yahoo.com/m/3b27e67f-d42f-351a-a142-85f8c2433d78/the-new-wild-west%3A-texas.html",
+          "publishedAt": "2026-08-07T13:30:00.000Z"
         },
         {
-          "title": "Amazon's Zoox to start paid robotaxi rides in Vegas next week",
-          "publisher": "Reuters",
-          "link": "https://finance.yahoo.com/technology/articles/amazons-zoox-start-paid-robotaxi-150625162.html",
-          "publishedAt": "2026-08-05T15:06:25.000Z"
+          "title": "Elon Musk Says SpaceX Will Consume Three Times More Terafab AI Compute Than Tesla",
+          "publisher": "Benzinga",
+          "link": "https://finance.yahoo.com/technology/ai/articles/elon-musk-says-spacex-consume-124448057.html",
+          "publishedAt": "2026-08-07T12:44:48.000Z"
         },
         {
-          "title": "EVgo Q2 Earnings Call Highlights",
-          "publisher": "MarketBeat",
-          "link": "https://finance.yahoo.com/m/d5aa4e8f-394c-39ab-b652-967369bc7342/evgo-q2-earnings-call.html",
-          "publishedAt": "2026-08-05T15:04:23.000Z"
+          "title": "SPCX Stock Hasn’t Bottomed Out Yet, But It’s ‘A Really Great Time To Buy,’ Says This Asset Manager",
+          "publisher": "Stocktwits",
+          "link": "https://finance.yahoo.com/m/2d40eb76-fe81-3757-b0a6-f8fc429bfcef/spcx-stock-hasn%E2%80%99t-bottomed.html",
+          "publishedAt": "2026-08-07T11:05:31.000Z"
         },
         {
-          "title": "Elon Musk's Tesla and SpaceX Have Shed $1.19 Trillion in Value Since June. Is This a Buying Opportunity?",
-          "publisher": "Motley Fool",
-          "link": "https://finance.yahoo.com/m/2304d673-773e-3509-9f35-ee84e36a4336/elon-musk%27s-tesla-and-spacex.html",
-          "publishedAt": "2026-08-05T14:40:00.000Z"
+          "title": "Electric Vehicles Today - LiDAR Market Growth Driven By Automated Driving Systems",
+          "publisher": "Simply Wall St.",
+          "link": "https://finance.yahoo.com/technology/articles/electric-vehicles-today-lidar-market-103943402.html",
+          "publishedAt": "2026-08-07T10:39:43.000Z"
         }
       ]
     },
@@ -9365,8 +9365,6 @@
       "symbol": "META",
       "history": {
         "dates": [
-          "2025-08-05",
-          "2025-08-06",
           "2025-08-07",
           "2025-08-08",
           "2025-08-11",
@@ -9616,11 +9614,11 @@
           "2026-07-31",
           "2026-08-03",
           "2026-08-04",
-          "2026-08-05"
+          "2026-08-05",
+          "2026-08-06",
+          "2026-08-07"
         ],
         "closes": [
-          763.46,
-          771.99,
           761.83,
           769.3,
           765.87,
@@ -9870,11 +9868,11 @@
           556.71,
           590.24,
           587.94,
-          584.07
+          588.77,
+          589.9,
+          596.275
         ],
         "volumes": [
-          11640300,
-          9733900,
           9019700,
           7320800,
           7612000,
@@ -10123,8 +10121,10 @@
           42271500,
           24261500,
           25938100,
-          17913800,
-          6129034
+          17959200,
+          14897200,
+          11787600,
+          4927020
         ]
       },
       "fundamentals": {
@@ -10138,18 +10138,18 @@
           "industry": "Internet Content & Information"
         },
         "quote": {
-          "price": 584.2,
-          "marketCap": 1488253091840,
+          "price": 596.275,
+          "marketCap": 1519014248448,
           "fiftyTwoWeekHigh": 796.25,
           "fiftyTwoWeekLow": 520.26
         },
         "valuation": {
-          "trailingPE": 21.987204,
-          "forwardPE": 16.626703,
-          "evToEbitda": 13.914,
-          "priceToSales": 6.5203624,
-          "priceToBook": 6.084593,
-          "pegRatio": 0.83
+          "trailingPE": 22.45857,
+          "forwardPE": 16.970366,
+          "evToEbitda": 13.906,
+          "priceToSales": 6.6551337,
+          "priceToBook": 6.210357,
+          "pegRatio": 0.88
         },
         "income": {
           "revenueTTM": 228246994944,
@@ -10158,7 +10158,7 @@
           "ebitdaMargin": 0.48042,
           "profitMargin": 0.29834998,
           "netIncome": null,
-          "epsTrailing": 26.57,
+          "epsTrailing": 26.55,
           "epsForward": 35.13625
         },
         "balance": {
@@ -10171,7 +10171,7 @@
           "freeCashflow": 21553625088,
           "capex": null,
           "operatingCashflow": 130301001728,
-          "fcfYield": 0.0144824997886295
+          "fcfYield": 0.014189218508003903
         },
         "returns": {
           "roe": 0.29848,
@@ -10181,7 +10181,7 @@
         "analyst": {
           "recommendationKey": "strong_buy",
           "recommendationMean": 1.35484,
-          "targetMean": 759.40564,
+          "targetMean": 756.94946,
           "targetHigh": 1000,
           "targetLow": 580,
           "numberOfAnalysts": 57
@@ -10236,40 +10236,40 @@
       },
       "news": [
         {
-          "title": "Shopify Earnings Flip the Script on AI Fears",
-          "publisher": "Barrons.com",
-          "link": "https://finance.yahoo.com/m/d40604ed-b739-33dc-93ea-b300664d224b/shopify-earnings-flip-the.html",
-          "publishedAt": "2026-08-05T15:52:00.000Z"
+          "title": "Microsoft, Amazon, Meta, Google Are 'Collectively Overinvesting' In AI: 'That's Betting, Not Investing,' Says 'Dean of Valuation'",
+          "publisher": "Benzinga Prediction Markets",
+          "link": "https://finance.yahoo.com/m/583dbafd-913c-3639-ba90-8ebb02e5aa1e/microsoft%2C-amazon%2C-meta%2C.html",
+          "publishedAt": "2026-08-07T15:21:38.000Z"
         },
         {
-          "title": "The Biggest Risk To Meta Platforms Stock Is A Bill Without A Payback Date",
-          "publisher": "Trefis",
-          "link": "https://finance.yahoo.com/m/4d5a6dbd-6799-3956-a761-51c4ee1424d4/the-biggest-risk-to-meta.html",
-          "publishedAt": "2026-08-05T15:38:42.000Z"
-        },
-        {
-          "title": "Prediction: A $5,000 Investment in Broadcom Could Be Worth This Much by Late-2028",
-          "publisher": "Motley Fool",
-          "link": "https://finance.yahoo.com/m/363f8b31-78a9-3481-857b-c175a5cd0305/prediction%3A-a-%245%2C000.html",
-          "publishedAt": "2026-08-05T15:20:00.000Z"
-        },
-        {
-          "title": "Meta's India Problem Is Getting Harder to Contain",
+          "title": "Alphabet Is Borrowing $25 Billion to Keep the AI Buildout Going",
           "publisher": "GuruFocus.com",
-          "link": "https://finance.yahoo.com/technology/articles/metas-india-problem-getting-harder-151649935.html",
-          "publishedAt": "2026-08-05T15:16:49.000Z"
+          "link": "https://finance.yahoo.com/technology/ai/articles/alphabet-borrowing-25-billion-keep-145110629.html",
+          "publishedAt": "2026-08-07T14:51:10.000Z"
         },
         {
-          "title": "SpaceX Has Already Lost AI Race",
+          "title": "AppLovin Grows 53% and Beats on Profit. Here’s Why We’re Bullish.",
           "publisher": "24/7 Wall St.",
-          "link": "https://finance.yahoo.com/m/291c17e4-b129-38fe-8cf0-ae088b084cf9/spacex-has-already-lost-ai.html",
-          "publishedAt": "2026-08-05T14:53:54.000Z"
+          "link": "https://finance.yahoo.com/m/c03c9625-9378-34a4-840f-8aa6adfe3297/applovin-grows-53%25-and-beats.html",
+          "publishedAt": "2026-08-07T14:30:59.000Z"
         },
         {
-          "title": "Meta, Google Online Child Safety Rules Advance in US Senate",
-          "publisher": "Bloomberg",
-          "link": "https://finance.yahoo.com/technology/ai/articles/meta-google-online-child-safety-144556082.html",
-          "publishedAt": "2026-08-05T14:45:56.000Z"
+          "title": "What we know about OpenAI's upcoming handheld device: Bloomberg",
+          "publisher": "Yahoo Finance Video",
+          "link": "https://finance.yahoo.com/video/know-openais-upcoming-handheld-device-140247594.html",
+          "publishedAt": "2026-08-07T14:02:47.000Z"
+        },
+        {
+          "title": "Meta ordered to pay $942M: Why the judge compared the company to 'noxious pollution'",
+          "publisher": "Yahoo Finance Video",
+          "link": "https://finance.yahoo.com/video/meta-ordered-pay-942m-why-135234668.html",
+          "publishedAt": "2026-08-07T13:52:34.000Z"
+        },
+        {
+          "title": "AMD Buys AI Chip Startup Taalas—Here's Why It Matters To NVDA Investors",
+          "publisher": "Benzinga Prediction Markets",
+          "link": "https://finance.yahoo.com/m/533ccb11-2870-3f5f-93fe-33d240a53e63/amd-buys-ai-chip-startup.html",
+          "publishedAt": "2026-08-07T13:16:40.000Z"
         }
       ]
     },
@@ -10277,8 +10277,6 @@
       "symbol": "JPM",
       "history": {
         "dates": [
-          "2025-08-05",
-          "2025-08-06",
           "2025-08-07",
           "2025-08-08",
           "2025-08-11",
@@ -10528,11 +10526,11 @@
           "2026-07-31",
           "2026-08-03",
           "2026-08-04",
-          "2026-08-05"
+          "2026-08-05",
+          "2026-08-06",
+          "2026-08-07"
         ],
         "closes": [
-          291.37,
-          291.35,
           286.94,
           288.76,
           289.56,
@@ -10782,11 +10780,11 @@
           351.79,
           352.64,
           357.52,
-          359.875
+          359.24,
+          356.3,
+          356.53
         ],
         "volumes": [
-          7182300,
-          6330200,
           8057100,
           6634100,
           5510100,
@@ -11035,8 +11033,10 @@
           7606500,
           6603400,
           6436600,
-          8474300,
-          1792608
+          8477200,
+          5269500,
+          5817600,
+          1382195
         ]
       },
       "fundamentals": {
@@ -11050,18 +11050,18 @@
           "industry": "Banks - Diversified"
         },
         "quote": {
-          "price": 359.875,
+          "price": 356.53,
           "marketCap": null,
-          "fiftyTwoWeekHigh": 362.17,
+          "fiftyTwoWeekHigh": 359.3,
           "fiftyTwoWeekLow": 279.1
         },
         "valuation": {
-          "trailingPE": 15.412206,
-          "forwardPE": 14.456011,
+          "trailingPE": 15.275493,
+          "forwardPE": 14.257214,
           "evToEbitda": null,
           "priceToSales": null,
-          "priceToBook": 2.7056847,
-          "pegRatio": 1.72
+          "priceToBook": 2.6805356,
+          "pegRatio": 1.74
         },
         "income": {
           "revenueTTM": 186328006656,
@@ -11070,8 +11070,8 @@
           "ebitdaMargin": 0,
           "profitMargin": 0.34921002,
           "netIncome": null,
-          "epsTrailing": 23.35,
-          "epsForward": 24.89449
+          "epsTrailing": 23.34,
+          "epsForward": 25.00699
         },
         "balance": {
           "totalCash": 1818026049536,
@@ -11092,11 +11092,11 @@
         },
         "analyst": {
           "recommendationKey": "buy",
-          "recommendationMean": 2.08696,
-          "targetMean": 372.65,
+          "recommendationMean": 2.08333,
+          "targetMean": 373.85715,
           "targetHigh": 420,
           "targetLow": 305,
-          "numberOfAnalysts": 20
+          "numberOfAnalysts": 21
         },
         "quarterly": {
           "dates": [],
@@ -11128,40 +11128,40 @@
       },
       "news": [
         {
-          "title": "Nike Stock Falls 3.6% After JPMorgan Warns of $1 Billion Hit",
-          "publisher": "GuruFocus.com",
-          "link": "https://finance.yahoo.com/markets/stocks/articles/nike-stock-falls-3-6-150800037.html",
-          "publishedAt": "2026-08-05T15:08:00.000Z"
-        },
-        {
-          "title": "Gold Fields (JSE:GFI) Stock Fair Value Falls After Analysts Cut Targets",
-          "publisher": "Simply Wall St.",
-          "link": "https://finance.yahoo.com/markets/stocks/articles/gold-fields-jse-gfi-stock-141023611.html",
-          "publishedAt": "2026-08-05T14:10:23.000Z"
-        },
-        {
-          "title": "Micron Stock Rises After Musk Flags Surging Memory Prices",
+          "title": "The New Wild West: Texas Experiments With Raw Capitalism",
           "publisher": "Barrons.com",
-          "link": "https://finance.yahoo.com/m/f5eedee3-91bc-3ed5-bec2-f82ba4e8a537/micron-stock-rises-after-musk.html",
-          "publishedAt": "2026-08-05T14:00:00.000Z"
+          "link": "https://finance.yahoo.com/m/3b27e67f-d42f-351a-a142-85f8c2433d78/the-new-wild-west%3A-texas.html",
+          "publishedAt": "2026-08-07T13:30:00.000Z"
         },
         {
-          "title": "Market Chatter: JPMorgan CEO Dimon Leading Cross-Industry Initiative to Address AI Risks",
-          "publisher": "MT Newswires",
-          "link": "https://finance.yahoo.com/technology/ai/articles/market-chatter-jpmorgan-ceo-dimon-131919853.html",
-          "publishedAt": "2026-08-05T13:19:19.000Z"
+          "title": "Tom Lee Thinks 2027 Will Be “One of the Best Years” for Stocks—Why He’s Got a Strong Case",
+          "publisher": "24/7 Wall St.",
+          "link": "https://finance.yahoo.com/m/4119bf0f-8f04-32cf-8916-ef9f311ab661/tom-lee-thinks-2027-will-be.html",
+          "publishedAt": "2026-08-07T13:03:32.000Z"
         },
         {
-          "title": "Euroapi (ENXTPA:EAPI) Stock Sees Fair Value Cut As JPMorgan Rebased Expectations",
-          "publisher": "Simply Wall St.",
-          "link": "https://finance.yahoo.com/markets/stocks/articles/euroapi-enxtpa-eapi-stock-sees-131041036.html",
-          "publishedAt": "2026-08-05T13:10:41.000Z"
+          "title": "AEye to Participate in J.P. Morgan Auto Conference",
+          "publisher": "Business Wire",
+          "link": "https://finance.yahoo.com/technology/articles/aeye-participate-j-p-morgan-110000538.html",
+          "publishedAt": "2026-08-07T11:00:00.000Z"
         },
         {
-          "title": "Update: Market Chatter: JPMorgan Said to Near Deal to Acquire Idex for About $4.4 billion",
-          "publisher": "MT Newswires",
-          "link": "https://finance.yahoo.com/markets/stocks/articles/market-chatter-jpmorgan-said-near-124423239.html",
-          "publishedAt": "2026-08-05T12:44:23.000Z"
+          "title": "The Morning Risk Report: Prosecutors Probed Whistleblower Claims That JPMorgan Mishandled Fraud Cases",
+          "publisher": "The Wall Street Journal",
+          "link": "https://finance.yahoo.com/m/a5268b90-e2f2-3995-bf5b-e1a6e4076f90/the-morning-risk-report%3A.html",
+          "publishedAt": "2026-08-07T10:56:00.000Z"
+        },
+        {
+          "title": "Construction starts on 420MW solar and BESS facility in Mexico",
+          "publisher": "Energy Monitor",
+          "link": "https://finance.yahoo.com/m/34b9dba6-c4f9-30b2-9445-580411075433/construction-starts-on-420mw.html",
+          "publishedAt": "2026-08-07T10:26:43.000Z"
+        },
+        {
+          "title": "Construction begins on 420MW solar and BESS facility in Mexico",
+          "publisher": "World Construction Network",
+          "link": "https://finance.yahoo.com/m/2db8285c-cbaa-3a99-a614-4a3607fb04c8/construction-begins-on-420mw.html",
+          "publishedAt": "2026-08-07T10:26:43.000Z"
         }
       ]
     },
@@ -11169,8 +11169,6 @@
       "symbol": "V",
       "history": {
         "dates": [
-          "2025-08-05",
-          "2025-08-06",
           "2025-08-07",
           "2025-08-08",
           "2025-08-11",
@@ -11420,11 +11418,11 @@
           "2026-07-31",
           "2026-08-03",
           "2026-08-04",
-          "2026-08-05"
+          "2026-08-05",
+          "2026-08-06",
+          "2026-08-07"
         ],
         "closes": [
-          337.43,
-          339.74,
           332.09,
           336.78,
           335.9,
@@ -11674,11 +11672,11 @@
           366.13,
           365.67,
           369.59,
-          367.935
+          368.54,
+          370.47,
+          364.295
         ],
         "volumes": [
-          7295600,
-          5944100,
           8797100,
           6073900,
           5715800,
@@ -11927,8 +11925,10 @@
           8391400,
           7828400,
           5521300,
-          7495400,
-          1789445
+          7497500,
+          6065300,
+          5021600,
+          1470933
         ]
       },
       "fundamentals": {
@@ -11942,18 +11942,18 @@
           "industry": "Credit Services"
         },
         "quote": {
-          "price": 367.935,
-          "marketCap": 686952022016,
+          "price": 364.295,
+          "marketCap": 680156004352,
           "fiftyTwoWeekHigh": 373.97,
           "fiftyTwoWeekLow": 293.89
         },
         "valuation": {
-          "trailingPE": 31.313618,
-          "forwardPE": 24.582294,
-          "evToEbitda": 21.955,
-          "priceToSales": 15.441288,
-          "priceToBook": 19.49841,
-          "pegRatio": 1.66
+          "trailingPE": 31.030241,
+          "forwardPE": 24.339102,
+          "evToEbitda": 22.239,
+          "priceToSales": 15.2885275,
+          "priceToBook": 19.305511,
+          "pegRatio": 1.67
         },
         "income": {
           "revenueTTM": 44487999488,
@@ -11962,7 +11962,7 @@
           "ebitdaMargin": 0.69892997,
           "profitMargin": 0.50782,
           "netIncome": null,
-          "epsTrailing": 11.75,
+          "epsTrailing": 11.74,
           "epsForward": 14.96748
         },
         "balance": {
@@ -11975,7 +11975,7 @@
           "freeCashflow": 20404000768,
           "capex": null,
           "operatingCashflow": 22580000768,
-          "fcfYield": 0.02970222099080562
+          "fcfYield": 0.0299990011665623
         },
         "returns": {
           "roe": 0.6119,
@@ -11984,8 +11984,8 @@
         },
         "analyst": {
           "recommendationKey": "strong_buy",
-          "recommendationMean": 1.36585,
-          "targetMean": 414.1192,
+          "recommendationMean": 1.375,
+          "targetMean": 415.38947,
           "targetHigh": 450,
           "targetLow": 330,
           "numberOfAnalysts": 37
@@ -12040,40 +12040,40 @@
       },
       "news": [
         {
-          "title": "Circle Internet Stock Falls on an Earnings Beat. It’s the Crypto Slump.",
-          "publisher": "Barrons.com",
-          "link": "https://finance.yahoo.com/m/8bf38b81-5be4-3ccb-9d36-e0448e84a12f/circle-internet-stock-falls.html",
-          "publishedAt": "2026-08-05T15:42:00.000Z"
+          "title": "BNP Paribas Adjusts Price Target on Visa to $425 From $420, Maintains Outperform Rating",
+          "publisher": "MT Newswires",
+          "link": "https://finance.yahoo.com/markets/stocks/articles/bnp-paribas-adjusts-price-target-105654409.html",
+          "publishedAt": "2026-08-07T10:56:54.000Z"
         },
         {
-          "title": "Circle Taps Visa, Mastercard and BlackRock as Validators for September Arc Launch",
-          "publisher": "decrypt",
-          "link": "https://finance.yahoo.com/m/7371862e-58d6-384a-a0ee-e20ed6e1eb80/circle-taps-visa%2C-mastercard.html",
-          "publishedAt": "2026-08-05T15:38:09.000Z"
+          "title": "Zacks Industry Outlook Visa, Mastercard, PayPal, Fidelity   and WEX",
+          "publisher": "Zacks",
+          "link": "https://finance.yahoo.com/markets/stocks/articles/zacks-industry-outlook-visa-mastercard-100600594.html",
+          "publishedAt": "2026-08-07T10:06:00.000Z"
         },
         {
-          "title": "BeInCrypto Stage Brings Together Global Leaders at Rio Innovation Week 2026",
-          "publisher": "BeInCrypto",
-          "link": "https://finance.yahoo.com/m/3ccc62a1-46da-315f-8f2f-7e2749d2b53f/beincrypto-stage-brings.html",
-          "publishedAt": "2026-08-05T14:37:33.000Z"
+          "title": "SoFi and Visa Earnings Point to Consumer Confidence",
+          "publisher": "Motley Fool",
+          "link": "https://finance.yahoo.com/m/49279e0f-1d5a-36e4-b8eb-bc57205f3b57/sofi-and-visa-earnings-point.html",
+          "publishedAt": "2026-08-07T05:00:46.000Z"
         },
         {
-          "title": "Mastercard Is in Millions of Portfolios. Last Quarter, Elite Investors Were Quietly Buying Its Rival",
-          "publisher": "24/7 Wall St.",
-          "link": "https://finance.yahoo.com/m/3fd35e80-8a27-3405-aa09-effdad311302/mastercard-is-in-millions-of.html",
-          "publishedAt": "2026-08-05T13:58:23.000Z"
+          "title": "Mastercard (MA) vs. Visa (V): Stablecoins or AI Fraud Defense?",
+          "publisher": "Insider Monkey",
+          "link": "https://finance.yahoo.com/markets/stocks/articles/mastercard-ma-vs-visa-v-222246965.html",
+          "publishedAt": "2026-08-06T22:22:46.000Z"
         },
         {
-          "title": "Circle Internet Group Posts Mixed Financial Results",
-          "publisher": "CryptoProwl",
-          "link": "https://finance.yahoo.com/m/b8cd1315-1f06-3581-8c72-6aab6e6ba2cd/circle-internet-group-posts.html",
-          "publishedAt": "2026-08-05T13:54:00.000Z"
+          "title": "Bercor Pay launches with one intelligent payment experience",
+          "publisher": "GlobeNewswire",
+          "link": "https://finance.yahoo.com/markets/currencies/articles/bercor-pay-launches-one-intelligent-222200677.html",
+          "publishedAt": "2026-08-06T22:22:00.000Z"
         },
         {
-          "title": "Circle shares climb after Q2 results, federal bank charter approval and higher guidance",
-          "publisher": "InvestorsHub",
-          "link": "https://finance.yahoo.com/m/ac1799da-2bb2-32b2-b29c-6a053b2e38a3/circle-shares-climb-after-q2.html",
-          "publishedAt": "2026-08-05T12:58:24.000Z"
+          "title": "Visa (V) vs. Mastercard (MA): $2.4B BioCatch Acquisition Escalates the Payments Security War",
+          "publisher": "Insider Monkey",
+          "link": "https://finance.yahoo.com/markets/stocks/articles/visa-v-vs-mastercard-ma-221521206.html",
+          "publishedAt": "2026-08-06T22:15:21.000Z"
         }
       ]
     },
@@ -12081,8 +12081,6 @@
       "symbol": "BRK-B",
       "history": {
         "dates": [
-          "2025-08-05",
-          "2025-08-06",
           "2025-08-07",
           "2025-08-08",
           "2025-08-11",
@@ -12332,11 +12330,11 @@
           "2026-07-31",
           "2026-08-03",
           "2026-08-04",
-          "2026-08-05"
+          "2026-08-05",
+          "2026-08-06",
+          "2026-08-07"
         ],
         "closes": [
-          464.19,
-          468.91,
           461.47,
           465.4,
           464.73,
@@ -12586,11 +12584,11 @@
           511.54,
           513.14,
           517.22,
-          515.1
+          518.85,
+          524.61,
+          518.98
         ],
         "volumes": [
-          6780700,
-          4557100,
           5755700,
           3330600,
           3712100,
@@ -12839,8 +12837,10 @@
           4055100,
           3939800,
           4249000,
-          4766700,
-          1307913
+          4771300,
+          3749400,
+          4349300,
+          931207
         ]
       },
       "fundamentals": {
@@ -12854,17 +12854,17 @@
           "industry": "Insurance - Diversified"
         },
         "quote": {
-          "price": 515.1,
-          "marketCap": 1110995369984,
-          "fiftyTwoWeekHigh": 520.67,
-          "fiftyTwoWeekLow": 461.37
+          "price": 518.98,
+          "marketCap": 1119363923968,
+          "fiftyTwoWeekHigh": 521.99,
+          "fiftyTwoWeekLow": 462.55
         },
         "valuation": {
-          "trailingPE": 15.280332,
-          "forwardPE": 23.878695,
+          "trailingPE": 15.455031,
+          "forwardPE": 24.058561,
           "evToEbitda": -2.25,
-          "priceToSales": 2.9595447,
-          "priceToBook": 0.0010188712,
+          "priceToSales": 2.9818375,
+          "priceToBook": 0.0010265459,
           "pegRatio": 10.06
         },
         "income": {
@@ -12874,7 +12874,7 @@
           "ebitdaMargin": 0.31435,
           "profitMargin": 0.19305,
           "netIncome": null,
-          "epsTrailing": 33.71,
+          "epsTrailing": 33.58,
           "epsForward": 21.57153
         },
         "balance": {
@@ -12887,7 +12887,7 @@
           "freeCashflow": 61228249088,
           "capex": null,
           "operatingCashflow": 45504000000,
-          "fcfYield": 0.055111164944712396
+          "fcfYield": 0.054699144556092
         },
         "returns": {
           "roe": 0.10499,
@@ -12957,352 +12957,352 @@
     "MSFT": {
       "symbol": "MSFT",
       "longName": "Microsoft Corporation",
-      "trailingPE": 27.235508,
-      "evToEbitda": 18.911,
+      "trailingPE": 27.987179,
+      "evToEbitda": 19.377,
       "revenueGrowth": 0.177,
       "grossMargin": 0.67944,
       "roe": 0.34039003,
-      "price": 488.605
+      "price": 502.09
     },
     "GOOGL": {
       "symbol": "GOOGL",
       "longName": "Alphabet Inc.",
-      "trailingPE": 18.264292,
-      "evToEbitda": 25.781,
+      "trailingPE": 17.90573,
+      "evToEbitda": 24.668,
       "revenueGrowth": 0.242,
       "grossMargin": 0.60897,
       "roe": 0.48676,
-      "price": 364.19
+      "price": 356.8612
     },
     "AMZN": {
       "symbol": "AMZN",
       "longName": "Amazon.com, Inc.",
-      "trailingPE": 21.928802,
-      "evToEbitda": 18.898,
+      "trailingPE": 22.360935,
+      "evToEbitda": 18.147,
       "revenueGrowth": 0.196,
       "grossMargin": 0.5077,
       "roe": 0.30558002,
-      "price": 272.575
+      "price": 278.17
     },
     "META": {
       "symbol": "META",
       "longName": "Meta Platforms, Inc.",
-      "trailingPE": 21.987204,
-      "evToEbitda": 13.914,
+      "trailingPE": 22.45405,
+      "evToEbitda": 13.906,
       "revenueGrowth": 0.28,
       "grossMargin": 0.81747,
       "roe": 0.29848,
-      "price": 584.2
+      "price": 596.155
     },
     "NVDA": {
       "symbol": "NVDA",
       "longName": "NVIDIA Corporation",
-      "trailingPE": 32.741074,
-      "evToEbitda": 30.744,
+      "trailingPE": 34.395557,
+      "evToEbitda": 31.775,
       "revenueGrowth": 0.852,
       "grossMargin": 0.74144995,
       "roe": 1.14288,
-      "price": 220.02
+      "price": 224.603
     },
     "AAPL": {
       "symbol": "AAPL",
       "longName": "Apple Inc.",
-      "trailingPE": 36.102802,
-      "evToEbitda": 26.495,
+      "trailingPE": 35.91227,
+      "evToEbitda": 27.276,
       "revenueGrowth": 0.164,
       "grossMargin": 0.48653,
       "roe": 1.4875101,
-      "price": 309.04
+      "price": 313.155
     },
     "ORCL": {
       "symbol": "ORCL",
       "longName": "Oracle Corporation",
-      "trailingPE": 24.816465,
-      "evToEbitda": 18.392,
+      "trailingPE": 25.067009,
+      "evToEbitda": 18.177,
       "revenueGrowth": 0.206,
       "grossMargin": 0.65822,
       "roe": 0.53376,
-      "price": 144.68
+      "price": 145.89
     },
     "NFLX": {
       "symbol": "NFLX",
       "longName": "Netflix, Inc.",
-      "trailingPE": 23.106918,
-      "evToEbitda": 21.313,
+      "trailingPE": 23.280031,
+      "evToEbitda": 21.346,
       "revenueGrowth": 0.134,
       "grossMargin": 0.49118,
       "roe": 0.49541,
-      "price": 73.48
+      "price": 74.0305
     },
     "WMT": {
       "symbol": "WMT",
       "longName": "Walmart Inc.",
-      "trailingPE": 39.507042,
-      "evToEbitda": 21.243,
+      "trailingPE": 39.30282,
+      "evToEbitda": 21.485,
       "revenueGrowth": 0.073,
       "grossMargin": 0.24976,
       "roe": 0.24132,
-      "price": 112.2
+      "price": 111.62
     },
     "COST": {
       "symbol": "COST",
       "longName": "Costco Wholesale Corporation",
-      "trailingPE": 47.315372,
-      "evToEbitda": 30.561,
+      "trailingPE": 47.641632,
+      "evToEbitda": 30.403,
       "revenueGrowth": 0.215,
       "grossMargin": 0.12876001,
       "roe": 0.29152,
-      "price": 941.5759
+      "price": 945.21
     },
     "AMD": {
       "symbol": "AMD",
       "longName": null,
-      "trailingPE": 162.12625,
-      "evToEbitda": 105.219,
-      "revenueGrowth": 0.378,
-      "grossMargin": 0.5306,
-      "roe": 0.08063,
-      "price": 488
+      "trailingPE": 123.5,
+      "evToEbitda": 82.608,
+      "revenueGrowth": 0.501,
+      "grossMargin": 0.55724,
+      "roe": 0.10196,
+      "price": 482.885
     },
     "INTC": {
       "symbol": "INTC",
       "longName": "Intel Corporation",
       "trailingPE": null,
-      "evToEbitda": 29.419,
+      "evToEbitda": 32.058,
       "revenueGrowth": 0.254,
       "grossMargin": 0.38873002,
       "roe": -0.10715,
-      "price": 101.41
+      "price": 101.2301
     },
     "AVGO": {
       "symbol": "AVGO",
       "longName": "Broadcom Inc.",
-      "trailingPE": 69.64784,
-      "evToEbitda": 48.349,
+      "trailingPE": 70.83527,
+      "evToEbitda": 48.621,
       "revenueGrowth": 0.479,
       "grossMargin": 0.76284,
       "roe": 0.37280998,
-      "price": 419.28
+      "price": 425.72
     },
     "TSM": {
       "symbol": "TSM",
       "longName": "Taiwan Semiconductor Manufacturing Company Limited",
-      "trailingPE": 36.50483,
-      "evToEbitda": 4.666,
+      "trailingPE": 36.82602,
+      "evToEbitda": 4.679,
       "revenueGrowth": 0.36,
       "grossMargin": 0.6423,
       "roe": 0.39969003,
-      "price": 415.79
+      "price": 417.2388
     },
     "QCOM": {
       "symbol": "QCOM",
       "longName": "QUALCOMM Incorporated",
-      "trailingPE": 17.546164,
-      "evToEbitda": 13.844,
+      "trailingPE": 18.880136,
+      "evToEbitda": 14.619,
       "revenueGrowth": -0.04,
       "grossMargin": 0.54226,
       "roe": 0.33754003,
-      "price": 157.74
+      "price": 165.39
     },
     "GM": {
       "symbol": "GM",
       "longName": null,
-      "trailingPE": 39.61384,
-      "evToEbitda": 11.094,
+      "trailingPE": 39.040176,
+      "evToEbitda": 11.055,
       "revenueGrowth": 0.019,
       "grossMargin": 0.10177,
       "roe": 0.03164,
-      "price": 88.735
+      "price": 87.45
     },
     "F": {
       "symbol": "F",
       "longName": null,
       "trailingPE": null,
-      "evToEbitda": 25.905,
+      "evToEbitda": 25.671,
       "revenueGrowth": -0.038,
       "grossMargin": 0.07115,
       "roe": -0.18252,
-      "price": 14.235
+      "price": 14.025
     },
     "TM": {
       "symbol": "TM",
       "longName": "Toyota Motor Corporation",
-      "trailingPE": 8.346499,
-      "evToEbitda": 6.268,
+      "trailingPE": 8.533004,
+      "evToEbitda": 6.263,
       "revenueGrowth": 0.104,
       "grossMargin": 0.16767,
       "roe": 0.12404,
-      "price": 185.96
+      "price": 190.03
     },
     "RIVN": {
       "symbol": "RIVN",
       "longName": "Rivian Automotive, Inc.",
       "trailingPE": null,
-      "evToEbitda": -8.215,
+      "evToEbitda": -8.228,
       "revenueGrowth": 0.272,
       "grossMargin": 0.07513,
       "roe": -0.57523,
-      "price": 15.45
+      "price": 16.025
     },
     "LCID": {
       "symbol": "LCID",
       "longName": "Lucid Group, Inc.",
       "trailingPE": null,
-      "evToEbitda": -2.398,
-      "revenueGrowth": 0.202,
-      "grossMargin": -0.95602,
-      "roe": -0.97587997,
-      "price": 6.5287
+      "evToEbitda": -2.425,
+      "revenueGrowth": 0.562,
+      "grossMargin": -0.96563005,
+      "roe": -1.25992,
+      "price": 7.1317
     },
     "SNAP": {
       "symbol": "SNAP",
       "longName": "Snap Inc.",
       "trailingPE": null,
-      "evToEbitda": -77.646,
+      "evToEbitda": -71.056,
       "revenueGrowth": 0.189,
       "grossMargin": 0.57333,
       "roe": -0.15576,
-      "price": 5.24
+      "price": 5.335
     },
     "PINS": {
       "symbol": "PINS",
       "longName": "Pinterest, Inc.",
-      "trailingPE": 48.489582,
-      "evToEbitda": 40.801,
-      "revenueGrowth": 0.178,
-      "grossMargin": 0.79864,
-      "roe": 0.0887,
-      "price": 23.275
+      "trailingPE": 69.16176,
+      "evToEbitda": 41.49,
+      "revenueGrowth": 0.182,
+      "grossMargin": 0.79473,
+      "roe": 0.06461,
+      "price": 23.515
     },
     "DIS": {
       "symbol": "DIS",
       "longName": null,
-      "trailingPE": 16.0256,
-      "evToEbitda": 11.09,
-      "revenueGrowth": 0.065,
-      "grossMargin": 0.3716,
-      "roe": 0.1101,
-      "price": 100.16
+      "trailingPE": 21.583506,
+      "evToEbitda": 10.896,
+      "revenueGrowth": 0.068,
+      "grossMargin": 0.37595,
+      "roe": 0.0801,
+      "price": 104.68
     },
     "BAC": {
       "symbol": "BAC",
       "longName": null,
-      "trailingPE": 14.477117,
+      "trailingPE": 14.513881,
       "evToEbitda": null,
       "revenueGrowth": 0.168,
       "grossMargin": 0,
       "roe": 0.111990005,
-      "price": 63.265
+      "price": 62.8451
     },
     "WFC": {
       "symbol": "WFC",
       "longName": "Wells Fargo & Company",
-      "trailingPE": 12.954941,
+      "trailingPE": 12.593023,
       "evToEbitda": null,
       "revenueGrowth": 0.095,
       "grossMargin": 0,
       "roe": 0.12575,
-      "price": 89.13
+      "price": 86.64
     },
     "C": {
       "symbol": "C",
       "longName": "Citigroup Inc.",
-      "trailingPE": 14.809829,
+      "trailingPE": 14.516181,
       "evToEbitda": null,
       "revenueGrowth": 0.145,
       "grossMargin": 0,
       "roe": 0.08529,
-      "price": 138.62
+      "price": 134.565
     },
     "GS": {
       "symbol": "GS",
       "longName": null,
-      "trailingPE": 16.563267,
+      "trailingPE": 16.510859,
       "evToEbitda": null,
       "revenueGrowth": 0.425,
       "grossMargin": 0.82075995,
-      "roe": 0.16951999,
-      "price": 1072.6372
+      "roe": 0.16902,
+      "price": 1041.67
     },
     "MS": {
       "symbol": "MS",
       "longName": "Morgan Stanley",
-      "trailingPE": 17.624495,
+      "trailingPE": 17.371979,
       "evToEbitda": null,
       "revenueGrowth": 0.28,
       "grossMargin": 0.87641,
-      "roe": null,
-      "price": 218.015
+      "roe": 0.17969999,
+      "price": 215.0651
     },
     "MA": {
       "symbol": "MA",
       "longName": null,
-      "trailingPE": 31.41162,
-      "evToEbitda": 23.116,
+      "trailingPE": 31,
+      "evToEbitda": 23.313,
       "revenueGrowth": 0.141,
       "grossMargin": 1,
       "roe": 2.41202,
-      "price": 570.435
+      "price": 564.2
     },
     "AXP": {
       "symbol": "AXP",
       "longName": "American Express Company",
-      "trailingPE": 21.139952,
+      "trailingPE": 20.61954,
       "evToEbitda": null,
       "revenueGrowth": 0.128,
       "grossMargin": 0.62338,
       "roe": 0.34377,
-      "price": 348.175
+      "price": 339.81
     },
     "PYPL": {
       "symbol": "PYPL",
       "longName": "PayPal Holdings, Inc.",
-      "trailingPE": 10.997165,
-      "evToEbitda": 8.216,
+      "trailingPE": 11.218337,
+      "evToEbitda": 8.38,
       "revenueGrowth": 0.048,
       "grossMargin": 0.40477002,
       "roe": 0.24497,
-      "price": 58.175
+      "price": 59.345
     },
     "COF": {
       "symbol": "COF",
       "longName": "Capital One Financial Corporation",
-      "trailingPE": 12.197797,
+      "trailingPE": 11.941598,
       "evToEbitda": null,
       "revenueGrowth": 11.11,
       "grossMargin": 0,
       "roe": 0.09031,
-      "price": 221.39
+      "price": 216.74
     },
     "FIS": {
       "symbol": "FIS",
       "longName": "Fidelity National Information Services, Inc.",
-      "trailingPE": 6.580645,
-      "evToEbitda": 11.469,
+      "trailingPE": 6.505376,
+      "evToEbitda": 12.086,
       "revenueGrowth": 0.291,
-      "grossMargin": 0.35951,
+      "grossMargin": 0.35836,
       "roe": 0.22348,
-      "price": 42.84
+      "price": 42.35
     },
     "JPM": {
       "symbol": "JPM",
       "longName": null,
-      "trailingPE": 15.414346,
+      "trailingPE": 15.275493,
       "evToEbitda": null,
       "revenueGrowth": 0.304,
       "grossMargin": 0,
       "roe": 0.17789,
-      "price": 359.925
+      "price": 356.53
     },
     "V": {
       "symbol": "V",
       "longName": null,
-      "trailingPE": 31.330214,
-      "evToEbitda": 21.955,
+      "trailingPE": 31.020443,
+      "evToEbitda": 22.239,
       "revenueGrowth": 0.144,
       "grossMargin": 0.97725,
       "roe": 0.6119,
-      "price": 368.13
+      "price": 364.18
     }
   },
   "peerMap": {
